@@ -12,7 +12,6 @@ from transformers import TrainingArguments, Trainer
 from transformers import DataCollatorWithPadding
 from transformers import logging
 
-
 logging.set_verbosity_info()
 
 
@@ -77,8 +76,8 @@ bert_model = AutoModelForSequenceClassification.from_pretrained("distilbert-base
 training_args = TrainingArguments(
     output_dir='./results',
     learning_rate=2e-5,
-    per_device_train_batch_size=16,
-    per_device_eval_batch_size=16,
+    per_device_train_batch_size=256,
+    per_device_eval_batch_size=256,
     num_train_epochs=5,
     weight_decay=0.01,
     logging_dir='./logs',
