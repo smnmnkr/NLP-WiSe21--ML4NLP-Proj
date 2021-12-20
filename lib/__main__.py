@@ -84,7 +84,6 @@ training_args = TrainingArguments(
     per_device_eval_batch_size=16,
     num_train_epochs=5,
     weight_decay=0.01,
-    evaluate_during_training=True,
     logging_dir='./logs',
 )
 
