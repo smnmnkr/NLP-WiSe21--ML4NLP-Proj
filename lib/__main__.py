@@ -3,15 +3,16 @@ from typing import List, Dict
 import re
 import pandas as pd
 
+from datasets import load_metric
+
 from transformers import AutoTokenizer
 from transformers import AutoModelForSequenceClassification
 from transformers import TrainingArguments, Trainer
 from transformers import DataCollatorWithPadding
 from transformers import logging
 
-from sklearn.metrics import accuracy_score, precision_recall_fscore_support
 
-logging.set_verbosity_warning()
+logging.set_verbosity_error()
 
 
 def prepare_data(raw: pd.DataFrame) -> List[Dict]:
@@ -49,21 +50,14 @@ def tokenize(data: list, tokenizer):
         del row['text']
 
 
-def compute_metrics(pred):
-    labels = pred.label_ids
-    preds = pred.predictions.argmax(-1)
+def compute_metrics(eval_pred):
+    predictions, labels = eval_pred
+    predictions, predictions.argmax(-1)
 
-    precision, recall, f1, _ = precision_recall_fscore_support(labels, preds, average='binary')
-    acc = accuracy_score(labels, preds)
-
-    return {
-        'accuracy': acc,
-        'f1': f1,
-        'precision': precision,
-        'recall': recall
-    }
+    return metric.compute(predictions=predictions, references=labels)
 
 
+metric = load_metric("f1")
 bert_tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased")
 data_collator = DataCollatorWithPadding(tokenizer=bert_tokenizer)
 
@@ -101,4 +95,6 @@ trainer = Trainer(
 
 trainer.train()
 trainer.evaluate()
-trainer.predict(test)
+
+outputs = trainer.predict(test)
+print(outputs.metrics)
