@@ -12,7 +12,7 @@ from transformers import DataCollatorWithPadding
 from transformers import logging
 
 
-logging.set_verbosity_error()
+logging.set_verbosity_info()
 
 
 def prepare_data(raw: pd.DataFrame) -> List[Dict]:
