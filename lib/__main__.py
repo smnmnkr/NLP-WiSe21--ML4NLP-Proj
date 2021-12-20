@@ -2,6 +2,7 @@ from typing import List, Dict
 
 import re
 import pandas as pd
+import numpy as np
 
 from datasets import load_metric
 
@@ -52,7 +53,7 @@ def tokenize(data: list, tokenizer):
 
 def compute_metrics(eval_pred):
     predictions, labels = eval_pred
-    predictions, predictions.argmax(-1)
+    predictions = np.argmax(predictions, axis=1)
 
     return metric.compute(predictions=predictions, references=labels)
 
