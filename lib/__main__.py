@@ -94,6 +94,7 @@ trainer = Trainer(
     eval_dataset=test,
     tokenizer=bert_tokenizer,
     data_collator=data_collator,
+    compute_metrics=compute_metrics,
 
 )
 
