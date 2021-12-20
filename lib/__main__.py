@@ -9,11 +9,12 @@ from transformers import TrainingArguments, Trainer
 from transformers import DataCollatorWithPadding
 from transformers import logging
 
+from sklearn.metrics import accuracy_score, precision_recall_fscore_support
+
 logging.set_verbosity_warning()
 
 
 def prepare_data(raw: pd.DataFrame) -> List[Dict]:
-
     def _clean_text(row: pd.DataFrame) -> pd.DataFrame:
         # remove hyperlinks
         # src: https://stackoverflow.com/questions/11331982/how-to-remove-any-url-within-a-string-in-python/11332580
@@ -43,10 +44,22 @@ def prepare_data(raw: pd.DataFrame) -> List[Dict]:
 
 
 def tokenize(data: list, tokenizer):
-
     for row in data:
         row.update(tokenizer(row['text'], truncation=True, padding='max_length', max_length=500))
         del row['text']
+
+
+def compute_metrics(pred):
+    labels = pred.label_ids
+    preds = pred.predictions.argmax(-1)
+    precision, recall, f1, _ = precision_recall_fscore_support(labels, preds, average='binary')
+    acc = accuracy_score(labels, preds)
+    return {
+        'accuracy': acc,
+        'f1': f1,
+        'precision': precision,
+        'recall': recall
+    }
 
 
 bert_tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased")
@@ -62,7 +75,6 @@ test = prepare_data(test_raw)
 tokenize(train, bert_tokenizer)
 tokenize(test, bert_tokenizer)
 
-
 bert_model = AutoModelForSequenceClassification.from_pretrained("distilbert-base-uncased", num_labels=2)
 
 training_args = TrainingArguments(
@@ -72,6 +84,7 @@ training_args = TrainingArguments(
     per_device_eval_batch_size=16,
     num_train_epochs=5,
     weight_decay=0.01,
+    evaluate_during_training=True,
     logging_dir='./logs',
 )
 
@@ -82,6 +95,8 @@ trainer = Trainer(
     eval_dataset=test,
     tokenizer=bert_tokenizer,
     data_collator=data_collator,
+
 )
 
 trainer.train()
+trainer.evaluate()
