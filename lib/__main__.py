@@ -52,8 +52,10 @@ def tokenize(data: list, tokenizer):
 def compute_metrics(pred):
     labels = pred.label_ids
     preds = pred.predictions.argmax(-1)
+
     precision, recall, f1, _ = precision_recall_fscore_support(labels, preds, average='binary')
     acc = accuracy_score(labels, preds)
+
     return {
         'accuracy': acc,
         'f1': f1,
@@ -95,8 +97,8 @@ trainer = Trainer(
     tokenizer=bert_tokenizer,
     data_collator=data_collator,
     compute_metrics=compute_metrics,
-
 )
 
 trainer.train()
 trainer.evaluate()
+trainer.predict(test)
