@@ -72,13 +72,14 @@ training_args = TrainingArguments(
     per_device_eval_batch_size=16,
     num_train_epochs=5,
     weight_decay=0.01,
+    logging_dir='./logs',
 )
 
 trainer = Trainer(
     model=bert_model,
     args=training_args,
-    train_dataset=test,
-    eval_dataset=train,
+    train_dataset=train,
+    eval_dataset=test,
     tokenizer=bert_tokenizer,
     data_collator=data_collator,
 )
