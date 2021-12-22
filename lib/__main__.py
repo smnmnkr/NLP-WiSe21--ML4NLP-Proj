@@ -1,6 +1,5 @@
 import argparse
 
-import torch
 import numpy as np
 
 from datasets import load_metric
@@ -15,7 +14,7 @@ from lib.data import Data
 from lib.preprocessor import Preprocessor
 from lib.utils import load_json
 
-torch.cuda.set_device(0)
+logging.set_verbosity_info()
 
 
 class Main:
