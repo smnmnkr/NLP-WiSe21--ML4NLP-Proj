@@ -34,7 +34,7 @@ make baseline
     "emojis"
   ],
   "model": {
-    "name": "bert-base-uncased"
+    "name": "distilbert-base-uncased"
   },
   "trainer": {
     "learning_rate": 2e-5,
