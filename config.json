@@ -12,7 +12,7 @@
     "emojis"
   ],
   "model": {
-    "name": "distilbert-base-uncased",
+    "name": "distilbert-base-uncased-finetuned-sst-2-english",
     "config": {
       "dropout": 0.3,
       "attention_dropout": 0.2,
