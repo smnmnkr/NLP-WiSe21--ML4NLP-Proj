@@ -125,4 +125,4 @@ class Preprocessor:
                              u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
                              "]+", flags=re.UNICODE)
 
-        return pattern.sub(r' ', text)
+        return pattern.sub(r'<emoji>', text)
