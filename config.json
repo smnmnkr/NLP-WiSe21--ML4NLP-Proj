@@ -13,10 +13,7 @@
   "model": {
     "name": "roberta-base",
     "config": {
-      "dropout": 0.3,
-      "attention_dropout": 0.2,
-      "seq_classif_dropout": 0.2
-    }
+      }
   },
   "trainer": {
     "num_train_epochs": 20.0,
