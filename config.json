@@ -5,14 +5,13 @@
     "test_path": null
   },
   "preprocess": [
-    "lowercase",
     "hyperlinks",
     "mentions",
     "hashtags",
     "emojis"
   ],
   "model": {
-    "name": "distilbert-base-uncased",
+    "name": "roberta-base",
     "config": {
       "dropout": 0.3,
       "attention_dropout": 0.2,
