@@ -5,7 +5,7 @@ from sklearn.metrics import confusion_matrix, f1_score
 
 # Loading the data
 train = pd.read_csv('data/train.csv', sep=',')
-test = pd.read_csv('data/test.csv', sep=',')
+test = pd.read_csv('data/eval.csv', sep=',')
 
 # Convert data to List (sklearn requires lists)
 trainingTexts = train['tweet'].tolist()
