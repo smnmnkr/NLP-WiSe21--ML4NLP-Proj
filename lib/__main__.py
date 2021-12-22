@@ -14,6 +14,8 @@ from lib.data import Data
 from lib.preprocessor import Preprocessor
 from lib.utils import load_json
 
+logging.set_verbosity_info()
+
 
 class Main:
     #
