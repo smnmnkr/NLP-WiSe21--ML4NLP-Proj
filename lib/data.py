@@ -25,7 +25,10 @@ class Data:
         self.raw: dict = {
             'train': pd.read_csv(train_path, sep=','),
             'eval': pd.read_csv(eval_path, sep=','),
-            'test': pd.read_csv(test_path, sep=',') if test_path is not None else None
+            'test':
+                pd.read_csv(test_path, sep=',')
+                if test_path is not None else
+                pd.read_csv(eval_path, sep=',')
         }
 
         self.prepared: dict = self.raw.copy()
@@ -42,9 +45,6 @@ class Data:
         :return: None
         """
         for _, data in self.prepared.items():
-            if data is None:
-                continue
-
             data.drop(['id', 'time', 'lang', 'smth'], axis=1, inplace=True)
             data.rename(columns={'tweet': 'text', 'sent': 'label'}, inplace=True)
 
@@ -76,9 +76,6 @@ class Data:
         :return: None
         """
         for _, data in self.prepared.items():
-            if data is None:
-                continue
-
             data['text'] = data['text'].apply(preprocessor)
 
     #
@@ -93,3 +90,6 @@ class Data:
         :return: List[Dict]
         """
         return self.prepared[split].to_dict('records')
+
+    def max_text_length(self) -> int:
+        return max([data['text'].str.len().max() for _, data in self.prepared.items()])

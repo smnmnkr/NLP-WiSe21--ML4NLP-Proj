@@ -88,7 +88,11 @@ class Main:
     #
     def tokenize(self, data: list):
         for row in data:
-            row.update(self.tokenizer(row['text'], truncation=True, padding='max_length', max_length=500))
+            row.update(
+                self.tokenizer(row['text'],
+                               truncation=True,
+                               padding='max_length',
+                               max_length=self.data.max_text_length()))
             del row['text']
 
     #
@@ -108,5 +112,3 @@ class Main:
 #
 if __name__ == "__main__":
     Main()()
-
-
