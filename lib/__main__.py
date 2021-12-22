@@ -1,7 +1,5 @@
-from typing import List, Dict
+import argparse
 
-import re
-import pandas as pd
 import numpy as np
 
 from datasets import load_metric
@@ -12,90 +10,103 @@ from transformers import TrainingArguments, Trainer
 from transformers import DataCollatorWithPadding
 from transformers import logging
 
+from lib.data import Data
+from lib.preprocessor import Preprocessor
+from lib.utils import load_json
 
 logging.set_verbosity_info()
 
 
-def prepare_data(raw: pd.DataFrame) -> List[Dict]:
-    def _clean_text(row: pd.DataFrame) -> pd.DataFrame:
-        # remove hyperlinks
-        # src: https://stackoverflow.com/questions/11331982/how-to-remove-any-url-within-a-string-in-python/11332580
-        row['text'] = re.sub(r'\S*https?:\S*', "", row['text'])
+class Main:
+    #
+    #
+    #  -------- __init__ -----------
+    #
+    def __init__(self):
+        self.description: str = "Twitter Sentiment Analysis"
+        self.config: dict = self.load_config()
 
-        # remove mentions
-        row['text'] = re.sub(r'@\w*', "", row['text'])
+        # load main hugging face components
+        self.tokenizer = AutoTokenizer.from_pretrained(self.config['model']['name'])
+        self.model = AutoModelForSequenceClassification.from_pretrained(self.config['model']['name'], num_labels=2)
+        self.data_collator = DataCollatorWithPadding(tokenizer=self.tokenizer)
+        self.metric = load_metric("f1")
 
-        # remove hashtags
-        row['text'] = re.sub(r'#\w*', "", row['text'])
+        # load preprocessor and data
+        self.preprocessor = Preprocessor()
+        self.data = Data(**self.config['data'])
+        self.data.apply_preprocessor(self.preprocessor)
 
-        return row
+        self.train = self.data.to_dict('train')
+        self.eval = self.data.to_dict('eval')
 
-    def _convert_sentiment(row: pd.DataFrame) -> pd.DataFrame:
-        row['label'] = 0 if row['label'] == 'Neutral' else 1
-        return row
+        self.tokenize(self.train)
+        self.tokenize(self.eval)
 
-    prepared = raw.copy()
+        # load and config trainer
+        self.trainer = Trainer(
+            model=self.model,
+            args=TrainingArguments(**self.config['trainer']),
+            train_dataset=self.train,
+            eval_dataset=self.eval,
+            tokenizer=self.tokenizer,
+            data_collator=self.data_collator,
+            compute_metrics=self.compute_metrics,
+        )
 
-    prepared.drop(['id', 'time', 'lang', 'smth'], axis=1, inplace=True)
-    prepared.rename(columns={'tweet': 'text', 'sent': 'label'}, inplace=True)
+    #
+    #
+    #  -------- __call__ -----------
+    #
+    def __call__(self):
+        self.trainer.train()
+        self.trainer.evaluate()
 
-    prepared.apply(_clean_text, axis=1)
-    prepared.apply(_convert_sentiment, axis=1)
+        outputs = self.trainer.predict(self.eval)
+        print(outputs.metrics)
 
-    return prepared.to_dict('records')
+    #
+    #
+    #  -------- load_config -----------
+    #
+    def load_config(self) -> dict:
+        # get console arguments, config file
+        parser = argparse.ArgumentParser(description=self.description)
+        parser.add_argument(
+            "-C",
+            dest="config",
+            required=True,
+            help="config.json file",
+            metavar="FILE",
+        )
+        args = parser.parse_args()
+        return load_json(args.config)
+
+    #
+    #
+    #  -------- tokenize -----------
+    #
+    def tokenize(self, data: list):
+        for row in data:
+            row.update(self.tokenizer(row['text'], truncation=True, padding='max_length', max_length=500))
+            del row['text']
+
+    #
+    #
+    #  -------- compute_metrics -----------
+    #
+    def compute_metrics(self, eval_pred):
+        predictions, labels = eval_pred
+        predictions = np.argmax(predictions, axis=1)
+
+        return self.metric.compute(predictions=predictions, references=labels)
 
 
-def tokenize(data: list, tokenizer):
-    for row in data:
-        row.update(tokenizer(row['text'], truncation=True, padding='max_length', max_length=500))
-        del row['text']
+#
+#
+#  -------- __main__ -----------
+#
+if __name__ == "__main__":
+    Main()()
 
 
-def compute_metrics(eval_pred):
-    predictions, labels = eval_pred
-    predictions = np.argmax(predictions, axis=1)
-
-    return metric.compute(predictions=predictions, references=labels)
-
-
-metric = load_metric("f1")
-bert_tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased")
-data_collator = DataCollatorWithPadding(tokenizer=bert_tokenizer)
-
-# Loading the data
-train_raw = pd.read_csv('data/train.csv', sep=',')
-test_raw = pd.read_csv('data/test.csv', sep=',')
-
-train = prepare_data(train_raw)
-test = prepare_data(test_raw)
-
-tokenize(train, bert_tokenizer)
-tokenize(test, bert_tokenizer)
-
-bert_model = AutoModelForSequenceClassification.from_pretrained("distilbert-base-uncased", num_labels=2)
-
-training_args = TrainingArguments(
-    output_dir='./results',
-    learning_rate=2e-5,
-    per_device_train_batch_size=16,
-    per_device_eval_batch_size=16,
-    num_train_epochs=5,
-    weight_decay=0.01,
-    logging_dir='./logs',
-)
-
-trainer = Trainer(
-    model=bert_model,
-    args=training_args,
-    train_dataset=train,
-    eval_dataset=test,
-    tokenizer=bert_tokenizer,
-    data_collator=data_collator,
-    compute_metrics=compute_metrics,
-)
-
-trainer.train()
-trainer.evaluate()
-
-outputs = trainer.predict(test)
-print(outputs.metrics)
