@@ -12,7 +12,12 @@
     "emojis"
   ],
   "model": {
-    "name": "distilbert-base-uncased"
+    "name": "distilbert-base-uncased",
+    "config": {
+      "dropout": 0.3,
+      "attention_dropout": 0.3,
+      "seq_classif_dropout": 0.3
+    }
   },
   "trainer": {
     "num_train_epochs": 5.0,

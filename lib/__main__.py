@@ -24,7 +24,10 @@ class Main:
 
         # load main hugging face components
         self.tokenizer = AutoTokenizer.from_pretrained(self.config['model']['name'])
-        self.model = AutoModelForSequenceClassification.from_pretrained(self.config['model']['name'], num_labels=2)
+        self.model = AutoModelForSequenceClassification.from_pretrained(
+            self.config['model']['name'],
+            num_labels=2,
+            **self.config['model']['config'])
         self.data_collator = DataCollatorWithPadding(tokenizer=self.tokenizer)
         self.metric = load_metric("f1")
 
