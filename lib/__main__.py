@@ -1,14 +1,11 @@
 import argparse
 
 import numpy as np
-
 from datasets import load_metric
-
-from transformers import AutoTokenizer
 from transformers import AutoModelForSequenceClassification
-from transformers import TrainingArguments, Trainer
+from transformers import AutoTokenizer
 from transformers import DataCollatorWithPadding
-from transformers import logging
+from transformers import TrainingArguments, Trainer
 
 from lib.data import Data
 from lib.preprocessor import Preprocessor
