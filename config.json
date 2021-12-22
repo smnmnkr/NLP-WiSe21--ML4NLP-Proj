@@ -12,7 +12,7 @@
     "emojis"
   ],
   "model": {
-    "name": "finiteautomata/bertweet-base-sentiment-analysis",
+    "name": "bhadresh-savani/distilbert-base-uncased-emotion",
     "config": {
       "dropout": 0.3,
       "attention_dropout": 0.2,
