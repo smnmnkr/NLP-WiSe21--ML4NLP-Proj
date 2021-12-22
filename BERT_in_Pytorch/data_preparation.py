@@ -6,7 +6,7 @@ from transformers import AutoTokenizer
 
 import torch
 from torch.utils.data import TensorDataset, random_split
-from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
+from torch.utils.data import DataLoader, SequentialSampler
 
 
 def _load_dataset(data_path):
@@ -91,8 +91,7 @@ def _create_dataloaders(input_ids, attention_masks, labels, batch_size, create_v
 
     dataloader = DataLoader(
                 dataset,  # The training samples.
-                sampler = RandomSampler(dataset), # Select batches randomly
-                # shuffle = True,
+                shuffle = True,
                 batch_size = batch_size # Trains with this batch size.
             )
 

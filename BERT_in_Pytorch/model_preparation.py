@@ -6,7 +6,7 @@ from transformers import    AutoModelForSequenceClassification,\
 class Model():
     def __init__(self, model_name, num_epochs, length_dataloader):
         self.model = AutoModelForSequenceClassification.from_pretrained(
-            "bert-base-cased", # Use the 12-layer BERT model, with a cased vocab.
+            model_name, # Use the 12-layer BERT model, with a cased vocab.
             num_labels = 2, # The number of output labels--2 for binary classification.
             output_attentions = False, # Whether the model returns attentions weights.
             output_hidden_states = False, # Whether the model returns all hidden-states.
