@@ -35,6 +35,7 @@ class Main:
         # load preprocessor and data
         self.preprocessor = Preprocessor()
         self.data = Data(**self.config['data'])
+        self.max_length_sent = self.data.max_text_length()
         self.data.apply_preprocessor(self.preprocessor)
 
         self.train = self.data.to_dict('train')
@@ -92,7 +93,7 @@ class Main:
                 self.tokenizer(row['text'],
                                truncation=True,
                                padding='max_length',
-                               max_length=self.data.max_text_length()))
+                               max_length=self.max_length_sent))
             del row['text']
 
     #
