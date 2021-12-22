@@ -1,4 +1,5 @@
 import argparse
+import warnings
 
 import numpy as np
 from datasets import load_metric
@@ -55,11 +56,14 @@ class Main:
     #  -------- __call__ -----------
     #
     def __call__(self):
-        self.trainer.train()
-        self.trainer.evaluate()
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
 
-        outputs = self.trainer.predict(self.eval)
-        print(outputs.metrics)
+            self.trainer.train()
+            self.trainer.evaluate()
+
+            outputs = self.trainer.predict(self.eval)
+            print(outputs.metrics)
 
     #
     #
