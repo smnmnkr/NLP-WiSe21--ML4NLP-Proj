@@ -70,6 +70,7 @@ class Embedding(nn.Module):
             len(self.lookup) + 1,
             self.dimension,
             padding_idx=self.padding_idx,
+            device=get_device()
         )
 
     #  -------- __len__ -----------
