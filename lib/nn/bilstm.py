@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any, List, Tuple
 
 import torch
 import torch.nn as nn
@@ -36,7 +36,7 @@ class BiLSTM(nn.Module):
     #
     def forward(
             self, batch: List[torch.Tensor]
-    ) -> tuple[Any, torch.Tensor]:
+    ) -> Tuple[Any, torch.Tensor]:
         """Contextualize the embedding for each sentence in the batch.
 
         The method takes on input a list of tensors with shape N x *,
