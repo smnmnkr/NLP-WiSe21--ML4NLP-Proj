@@ -44,7 +44,7 @@ class Embedding(nn.Module):
         except KeyError:
             idx = self.padding_idx
 
-        emb = self.model(torch.tensor(idx, dtype=torch.long)).to(get_device())
+        emb = self.model(torch.tensor(idx, dtype=torch.long).to(get_device())).to(get_device())
         return self.dropout(emb)
 
     #
