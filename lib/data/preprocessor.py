@@ -1,4 +1,5 @@
 import re
+from typing import List
 
 
 class Preprocessor:
@@ -23,7 +24,9 @@ class Preprocessor:
             'repetitions',
             'emojis',
             'smileys',
-            'spaces'
+            'punctuation',
+            'spaces',
+            'tokenize'
         ]
         """
 
@@ -71,6 +74,8 @@ class Preprocessor:
             'smileys': self.smileys,
             'repetitions': self.repetitions,
             'spaces': self.spaces,
+            'punctuation': self.punctuation,
+            'tokenize': self.tokenize
         }
 
     #  -------- lowercase -----------
@@ -207,3 +212,27 @@ class Preprocessor:
         text = re.sub(r'(:,\(|:\'\(|:"\()', ' smiley ', text)
 
         return text
+
+    #  -------- punctuation -----------
+    #
+    @staticmethod
+    def punctuation(text: str) -> str:
+        """
+        Removes punctuation
+
+        :param text: str
+        :return: text: str
+        """
+        return re.sub(r'[^\w\s]', '', text)
+
+    #  -------- tokenize -----------
+    #
+    @staticmethod
+    def tokenize(text: str) -> List[str]:
+        """
+        Base tokenizer
+
+        :param text: str
+        :return: text: str
+        """
+        return text.split()

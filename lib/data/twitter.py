@@ -3,7 +3,7 @@ from typing import List, Dict
 import pandas as pd
 
 
-class Data:
+class TwitterSentiment:
     """
     Container for Twitter Sentiment data
     """
@@ -66,9 +66,9 @@ class Data:
 
     #
     #
-    #  -------- apply_preprocessor -----------
+    #  -------- apply_to_text -----------
     #
-    def apply_preprocessor(self, preprocessor) -> None:
+    def apply_to_text(self, preprocessor: object) -> None:
         """
         Apply custom preprocessor pipeline to data
 
@@ -90,6 +90,3 @@ class Data:
         :return: List[Dict]
         """
         return self.prepared[split].to_dict('records')
-
-    def max_text_length(self) -> int:
-        return max([data['text'].str.len().max() for _, data in self.prepared.items()])

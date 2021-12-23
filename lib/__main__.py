@@ -1,16 +1,10 @@
 import argparse
-import warnings
 
-import numpy as np
-from datasets import load_metric
-from transformers import AutoModelForSequenceClassification
-from transformers import AutoTokenizer
-from transformers import DataCollatorWithPadding
-from transformers import TrainingArguments, Trainer
+from lib.model import Model
+from lib.train import train
 
-from lib.data import Data
-from lib.preprocessor import Preprocessor
-from lib.utils import load_json
+from lib.data import Preprocessor, TwitterSentiment
+from lib.util import load_json, get_device, flatten
 
 
 class Main:
@@ -22,51 +16,31 @@ class Main:
         self.description: str = "Twitter Sentiment Analysis"
         self.config: dict = self.load_config()
 
-        # load main hugging face components
-        self.tokenizer = AutoTokenizer.from_pretrained(self.config['model']['name'])
-        self.model = AutoModelForSequenceClassification.from_pretrained(
-            self.config['model']['name'],
-            num_labels=2,
-            **self.config['model']['config'])
-        self.data_collator = DataCollatorWithPadding(tokenizer=self.tokenizer)
-        self.metric = load_metric("f1")
+        # load data and preprocess
+        self.data = TwitterSentiment(**self.config['data'])
+        self.data.apply_to_text(Preprocessor())
 
-        # load preprocessor and data
-        self.preprocessor = Preprocessor()
-        self.data = Data(**self.config['data'])
-        self.max_length_sent = self.data.max_text_length()
-        self.data.apply_preprocessor(self.preprocessor)
-
+        # convert to list of dicts
         self.train = self.data.to_dict('train')
         self.eval = self.data.to_dict('eval')
 
-        self.tokenize(self.train)
-        self.tokenize(self.eval)
+        # retrieve all train token
+        train_token = set(flatten([row['text'] for row in self.train]))
 
-        # load and config trainer
-        self.trainer = Trainer(
-            model=self.model,
-            args=TrainingArguments(**self.config['trainer']),
-            train_dataset=self.train,
-            eval_dataset=self.eval,
-            tokenizer=self.tokenizer,
-            data_collator=self.data_collator,
-            compute_metrics=self.compute_metrics,
-        )
+        # prepare model
+        self.model = Model(self.config['model'], list(train_token)).to(get_device())
 
     #
     #
     #  -------- __call__ -----------
     #
     def __call__(self):
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
-
-            self.trainer.train()
-            self.trainer.evaluate()
-
-            outputs = self.trainer.predict(self.eval)
-            print(outputs.metrics)
+        train(
+            self.model,
+            self.train,
+            self.eval,
+            **self.config['trainer']
+        )
 
     #
     #
@@ -85,31 +59,7 @@ class Main:
         args = parser.parse_args()
         return load_json(args.config)
 
-    #
-    #
-    #  -------- tokenize -----------
-    #
-    def tokenize(self, data: list):
-        for row in data:
-            row.update(
-                self.tokenizer(row['text'],
-                               truncation=True,
-                               padding='max_length',
-                               max_length=self.max_length_sent))
-            del row['text']
 
-    #
-    #
-    #  -------- compute_metrics -----------
-    #
-    def compute_metrics(self, eval_pred):
-        predictions, labels = eval_pred
-        predictions = np.argmax(predictions, axis=1)
-
-        return self.metric.compute(predictions=predictions, references=labels)
-
-
-#
 #
 #  -------- __main__ -----------
 #
