@@ -1,6 +1,6 @@
 {
   "data": {
-    "train_path": "data/eval.csv",
+    "train_path": "data/train.csv",
     "eval_path": "data/eval.csv",
     "test_path": null
   },
@@ -18,16 +18,16 @@
   ],
   "model": {
     "embedding": {
-      "dimension": 32,
+      "dimension": 256,
       "dropout": 0.3
     },
     "lstm": {
-      "hid_size": 64,
-      "depth": 3,
+      "hid_size": 512,
+      "depth": 2,
       "dropout": 0.3
     },
     "score": {
-      "hid_size": 32,
+      "hid_size": 128,
       "dropout": 0.3
     }
   },
@@ -37,6 +37,6 @@
     "gradient_clip": 60.0,
     "epoch_num": 50,
     "report_rate": 1,
-    "batch_size": 96
+    "batch_size": 256
   }
 }
