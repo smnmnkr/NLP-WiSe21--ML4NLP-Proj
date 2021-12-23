@@ -8,7 +8,11 @@
     "hyperlinks",
     "mentions",
     "hashtags",
-    "emojis"
+    "retweet",
+    "repetitions",
+    "emojis",
+    "smileys",
+    "spaces"
   ],
   "model": {
     "name": "roberta-base",
