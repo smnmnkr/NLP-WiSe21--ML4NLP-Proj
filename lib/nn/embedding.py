@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
 
+from lib.util import get_device
+
 
 class Embedding(nn.Module):
     """Module for untrained Token Embedding"""
@@ -42,7 +44,7 @@ class Embedding(nn.Module):
         except KeyError:
             idx = self.padding_idx
 
-        emb = self.model(torch.tensor(idx, dtype=torch.long))
+        emb = self.model(torch.tensor(idx, dtype=torch.long)).to(get_device())
         return self.dropout(emb)
 
     #
