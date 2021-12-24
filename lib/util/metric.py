@@ -14,6 +14,11 @@ class Metric:
         src: (flairNLP) https://github.com/flairNLP/flair/blob/master/flair/training_utils.py
         """
         self.beta: float = 1.0
+
+        self._tps = None
+        self._fps = None
+        self._tns = None
+        self._fns = None
         self.reset()
 
     #
@@ -119,17 +124,17 @@ class Metric:
         all_classes = self.get_classes()
         all_classes = [None] + all_classes
         all_lines = [
-            "[--- {:8}\t tp: {:5} \t fp: {:5}  \t tn: {:5} \t fn: {:5} \t prec={:.3f} \t rec={:.3f} \t f1={:.3f} \t acc={:.3f} ---]".format(
-                "AVG" if class_name is None else encode(class_name),
-                self.get_tp(class_name),
-                self.get_fp(class_name),
-                self.get_tn(class_name),
-                self.get_fn(class_name),
-                self.precision(class_name),
-                self.recall(class_name),
-                self.f_score(class_name),
-                self.accuracy(class_name),
-            )
+            (f"[--- "
+             f"{'AVG' if class_name is None else encode(class_name):8}"
+             f"\t tp: {self.get_tp(class_name):5}"
+             f"\t fp: {self.get_fp(class_name):5} "
+             f"\t tn: {self.get_tn(class_name):5}"
+             f"\t fn: {self.get_fn(class_name):5}"
+             f"\t prec={self.precision(class_name):.3f}"
+             f"\t rec={self.recall(class_name):.3f}"
+             f"\t f1={self.f_score(class_name):.3f}"
+             f"\t acc={self.accuracy(class_name):.3f}"
+             f"---]")
             for class_name in all_classes
         ]
         print("\n".join(all_lines))
