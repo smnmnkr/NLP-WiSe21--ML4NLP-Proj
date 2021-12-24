@@ -16,7 +16,7 @@ class FastText:
     #
     def __init__(
             self,
-            data_path,
+            data_path: str,
             dimension: int = 300,
             dropout: float = 0.0,
     ):
