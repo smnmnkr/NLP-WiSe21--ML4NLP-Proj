@@ -20,7 +20,7 @@
     "type": "fasttext",
     "config": {
       "data_path": "data/cc.en.300.bin",
-      "dropout": 0.3
+      "dropout": 0.0
     }
   },
   "model": {
