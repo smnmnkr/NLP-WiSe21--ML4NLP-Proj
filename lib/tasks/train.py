@@ -23,6 +23,8 @@ def train(
         report_rate: int = 10,
         batch_size: int = 32,
 ):
+    print("\n[--- TRAINING ---]")
+
     # enable gradients
     torch.set_grad_enabled(True)
 
