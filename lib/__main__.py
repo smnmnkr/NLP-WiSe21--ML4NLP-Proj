@@ -3,7 +3,7 @@ import argparse
 from lib.model import Model
 
 from lib.data import Preprocessor, TwitterSentiment
-from lib.tasks import train
+from lib.tasks import train, evaluate
 from lib.util import load_json, get_device, flatten
 
 
@@ -40,6 +40,10 @@ class Main:
             self.train,
             self.eval,
             **self.config['trainer']
+        )
+        evaluate(
+            self.model,
+            self.eval
         )
 
     #
