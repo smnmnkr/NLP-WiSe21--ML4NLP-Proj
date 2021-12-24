@@ -45,7 +45,7 @@ class Model(nn.Module):
         embed_batch: list = self.embedding.forward_batch(batch)
 
         # Contextualize embedding with BiLSTM
-        pad_context, mask = self.context(embed_batch)
+        pad_context, mask, (hidden, _) = self.context(embed_batch)
 
         # Calculate the sentiment for each word
         pad_scores = self.score(pad_context)

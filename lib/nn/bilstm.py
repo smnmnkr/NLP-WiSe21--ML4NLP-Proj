@@ -36,7 +36,7 @@ class BiLSTM(nn.Module):
     #
     def forward(
             self, batch: List[torch.Tensor]
-    ) -> Tuple[Any, torch.Tensor]:
+    ) -> Tuple[Any, torch.Tensor, Tuple[Any, Any]]:
         """Contextualize the embedding for each sentence in the batch.
 
         The method takes on input a list of tensors with shape N x *,
@@ -54,12 +54,12 @@ class BiLSTM(nn.Module):
         )
 
         # Apply LSTM to the packed sequence of word embedding
-        packed_hidden, _ = self.net(packed_batch)
+        packed_out, (hidden, cell) = self.net(packed_batch)
 
         # Convert packed representation to a padded representation
-        padded_hidden, mask = rnn.pad_packed_sequence(
-            packed_hidden, batch_first=True
+        padded_out, mask = rnn.pad_packed_sequence(
+            packed_out, batch_first=True
         )
 
         # Return the scores
-        return self.acf(padded_hidden), mask
+        return self.acf(padded_out), mask, (hidden, cell)
