@@ -114,6 +114,10 @@ class Model(nn.Module):
                 if p_idx == g:
                     self.metric.add_tp(p_idx)
 
+                    for c in self.metric.get_classes():
+                        if c != p_idx:
+                            self.metric.add_tn(p_idx)
+
                 if p_idx != g:
                     self.metric.add_fp(p_idx)
                     self.metric.add_fn(g)
