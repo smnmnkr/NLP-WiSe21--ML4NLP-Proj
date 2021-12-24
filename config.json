@@ -32,7 +32,7 @@
     }
   },
   "trainer": {
-    "learning_rate": 5e-2,
+    "learning_rate": 5e-4,
     "weight_decay": 1e-6,
     "gradient_clip": 60.0,
     "epoch_num": 5,
