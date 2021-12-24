@@ -47,11 +47,11 @@ class Model(nn.Module):
         # Contextualize embedding with BiLSTM
         pad_context, mask, (hidden, _) = self.context(embed_batch)
 
-        # Calculate the sentiment for each word
-        pad_scores = self.score(pad_context)
+        # Calculate the score using the sum of all context prediction:
+        # return [torch.sum(pred, dim=0, keepdim=True) for pred in unpad(self.score(pad_context), mask)]
 
-        # Sum individual values to sentence prediction
-        return [torch.sum(pred, dim=0, keepdim=True) for pred in unpad(pad_scores, mask)]
+        # Calculate the score using last hidden context state:
+        return torch.split(self.score(torch.cat((hidden[-2, :, :], hidden[-1, :, :]), dim=1)), 1)
 
     #
     #
