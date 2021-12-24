@@ -17,15 +17,15 @@
     "tokenize"
   ],
   "embedding": {
-    "type": "untrained",
+    "type": "fasttext",
     "config": {
-      "dimension": 256,
+      "data_path": "data/cc.en.300.bin",
       "dropout": 0.3
     }
   },
   "model": {
     "lstm": {
-      "in_size": 256,
+      "in_size": 300,
       "hid_size": 512,
       "depth": 2,
       "dropout": 0.3

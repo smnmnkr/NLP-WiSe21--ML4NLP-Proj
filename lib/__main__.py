@@ -1,8 +1,7 @@
 import argparse
 
-from lib.embedding import Untrained
+from lib.embedding import Untrained, FastText
 from lib.model import Model
-
 from lib.data import Preprocessor, TwitterSentiment
 from lib.tasks import train, evaluate
 from lib.util import load_json, get_device, flatten
@@ -25,12 +24,20 @@ class Main:
         self.train = self.data.to_dict('train')
         self.eval = self.data.to_dict('eval')
 
-        # retrieve all train token
+        # prepare embedding
+        self.embedding = None
 
-        # load embedding,  model
-        self.embedding = Untrained(
-            data=list(set(flatten([row['text'] for row in self.train]))),
-            **self.config["embedding"]["config"])
+        # load untrained embedding module
+        if self.config["embedding"]["type"] == "untrained":
+            self.embedding = Untrained(
+                data=list(set(flatten([row['text'] for row in self.train]))),
+                **self.config["embedding"]["config"])
+
+        # load fasttext module
+        elif self.config["embedding"]["type"] == "fasttext":
+            self.embedding = FastText(**self.config["embedding"]["config"])
+
+        # load model
         self.model = Model(self.config['model'], self.embedding).to(get_device())
 
     #
