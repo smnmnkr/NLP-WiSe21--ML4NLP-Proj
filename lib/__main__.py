@@ -1,5 +1,6 @@
 import argparse
 
+from lib.embedding import Untrained
 from lib.model import Model
 
 from lib.data import Preprocessor, TwitterSentiment
@@ -25,10 +26,12 @@ class Main:
         self.eval = self.data.to_dict('eval')
 
         # retrieve all train token
-        train_token = set(flatten([row['text'] for row in self.train]))
 
-        # prepare model
-        self.model = Model(self.config['model'], list(train_token)).to(get_device())
+        # load embedding,  model
+        self.embedding = Untrained(
+            data=list(set(flatten([row['text'] for row in self.train]))),
+            **self.config["embedding"]["config"])
+        self.model = Model(self.config['model'], self.embedding).to(get_device())
 
     #
     #

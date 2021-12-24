@@ -4,7 +4,7 @@ import torch.nn as nn
 from lib.util import get_device
 
 
-class Embedding(nn.Module):
+class Untrained(nn.Module):
     """Module for untrained Token Embedding"""
 
     def __init__(

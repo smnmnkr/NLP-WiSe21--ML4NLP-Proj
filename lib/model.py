@@ -1,8 +1,8 @@
 import torch
 import torch.nn as nn
 
-from lib.nn import MLP, BiLSTM, Embedding
-from lib.util import Metric, unpad, flatten, get_device
+from lib.nn import MLP, BiLSTM
+from lib.util import Metric, flatten, get_device
 
 
 class Model(nn.Module):
@@ -11,29 +11,28 @@ class Model(nn.Module):
     #
     #  -------- init -----------
     #
-    def __init__(self, config: dict, embedding_data: list):
+    def __init__(self, config: dict, embedding):
         super().__init__()
 
         # save config
         self.config = config
         self.metric = Metric()
-
-        self.embedding = Embedding(data=embedding_data, **self.config["embedding"])
+        self.embedding = embedding
 
         # BiLSTM to calculate contextualized word embedding
         self.context = BiLSTM(
-            in_size=self.config["embedding"]["dimension"],
-            hid_size=config["lstm"]["hid_size"],
-            depth=config["lstm"]["depth"],
-            dropout=config["lstm"]["dropout"],
+            in_size=self.config["lstm"]["in_size"],
+            hid_size=self.config["lstm"]["hid_size"],
+            depth=self.config["lstm"]["depth"],
+            dropout=self.config["lstm"]["dropout"],
         )
 
         # MLP to calculate the POS tags
         self.score = MLP(
-            in_size=config["lstm"]["hid_size"] * 2,
-            hid_size=config["score"]["hid_size"],
+            in_size=self.config["lstm"]["hid_size"] * 2,
+            hid_size=self.config["score"]["hid_size"],
             out_size=2,
-            dropout=config["score"]["dropout"],
+            dropout=self.config["score"]["dropout"],
         )
 
     #

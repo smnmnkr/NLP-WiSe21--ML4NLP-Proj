@@ -16,12 +16,16 @@
     "punctuation",
     "tokenize"
   ],
-  "model": {
-    "embedding": {
+  "embedding": {
+    "type": "untrained",
+    "config": {
       "dimension": 256,
       "dropout": 0.3
-    },
+    }
+  },
+  "model": {
     "lstm": {
+      "in_size": 256,
       "hid_size": 512,
       "depth": 2,
       "dropout": 0.3
