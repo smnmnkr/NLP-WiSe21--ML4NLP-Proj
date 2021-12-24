@@ -83,7 +83,7 @@ def train(
             print(
                 "[--- @{:02}: \t loss(train)={:2.4f} \t f1(train)={:2.4f} \t f1(eval)={:2.4f} \t time(epoch)={} ---]".format(
                     epoch,
-                    train_loss / len(train_set),
+                    train_loss / len(train_loader),
                     model.evaluate(train_loader),
                     model.evaluate(dev_loader),
                     datetime.now() - time_begin,
