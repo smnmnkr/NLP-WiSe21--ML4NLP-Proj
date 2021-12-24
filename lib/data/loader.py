@@ -1,21 +1,21 @@
 from typing import Union
 
-
 from torch.utils.data import (
     Dataset,
     IterableDataset,
     DataLoader,
 )
 
+
 #
 #
 #  -------- batch_loader -----------
 #
 def batch_loader(
-    data_set: Union[IterableDataset, Dataset],
-    batch_size: int = 32,
-    shuffle: bool = False,
-    num_workers: int = 0,
+        data_set: Union[IterableDataset, Dataset],
+        batch_size: int = 32,
+        shuffle: bool = False,
+        num_workers: int = 0,
 ) -> DataLoader:
     """
     Create a batch data loader from the given data set.
