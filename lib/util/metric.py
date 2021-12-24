@@ -1,5 +1,6 @@
 import itertools
 from collections import defaultdict
+from typing import Union
 
 
 class Metric:
@@ -10,8 +11,9 @@ class Metric:
     #
     def __init__(self) -> None:
         """
-        inspired by flairNLP: https://github.com/flairNLP/flair/blob/master/flair/training_utils.py
+        src: (flairNLP) https://github.com/flairNLP/flair/blob/master/flair/training_utils.py
         """
+        self.beta: float = 1.0
         self.reset()
 
     #
@@ -19,9 +21,11 @@ class Metric:
     #  -------- precision -----------
     #
     def precision(self, class_name=None):
-        if self.get_predicted(class_name) > 0:
-            return self.get_tp(class_name) / self.get_predicted(class_name)
-
+        if self.get_tp(class_name) + self.get_fp(class_name) > 0:
+            return (
+                    self.get_tp(class_name)
+                    / (self.get_tp(class_name) + self.get_fp(class_name))
+            )
         return 0.0
 
     #
@@ -29,9 +33,11 @@ class Metric:
     #  -------- recall -----------
     #
     def recall(self, class_name=None):
-        if self.get_actual(class_name) > 0:
-            return self.get_tp(class_name) / (self.get_actual(class_name))
-
+        if self.get_tp(class_name) + self.get_fn(class_name) > 0:
+            return (
+                    self.get_tp(class_name)
+                    / (self.get_tp(class_name) + self.get_fn(class_name))
+            )
         return 0.0
 
     #
@@ -41,11 +47,30 @@ class Metric:
     def f_score(self, class_name=None):
         if self.precision(class_name) + self.recall(class_name) > 0:
             return (
-                    2
+                    (1 + self.beta * self.beta)
                     * (self.precision(class_name) * self.recall(class_name))
-                    / (self.precision(class_name) + self.recall(class_name))
+                    / (self.precision(class_name) * self.beta * self.beta + self.recall(class_name))
             )
+        return 0.0
 
+    #
+    #
+    #  -------- accuracy -----------
+    #
+    def accuracy(self, class_name=None):
+        if (
+                self.get_tp(class_name) + self.get_fp(class_name) + self.get_fn(class_name) + self.get_tn(class_name)
+                > 0
+        ):
+            return (
+                    (self.get_tp(class_name) + self.get_tn(class_name))
+                    / (
+                            self.get_tp(class_name)
+                            + self.get_fp(class_name)
+                            + self.get_fn(class_name)
+                            + self.get_tn(class_name)
+                    )
+            )
         return 0.0
 
     #
@@ -84,9 +109,9 @@ class Metric:
             self,
             encoding=None,
     ):
-        def encode(n: int) -> str:
+        def encode(n: Union[None, int]) -> Union[str, int]:
             if encoding:
-                return encoding.decode(n)
+                return encoding[n]
 
             else:
                 return n
@@ -94,7 +119,7 @@ class Metric:
         all_classes = self.get_classes()
         all_classes = [None] + all_classes
         all_lines = [
-            "[--- {:8}\t tp: {:5} \t fp: {:5} \t fn: {:5} \t prec={:.3f} \t rec={:.3f} \t f1={:.3f} ---]".format(
+            "[--- {:8}\t tp: {:5} \t fp: {:5} \t fn: {:5} \t prec={:.3f} \t rec={:.3f} \t f1={:.3f} \t acc={:.3f} ---]".format(
                 "_AVG_" if class_name is None else encode(class_name),
                 self.get_tp(class_name),
                 self.get_fp(class_name),
@@ -102,6 +127,7 @@ class Metric:
                 self.precision(class_name),
                 self.recall(class_name),
                 self.f_score(class_name),
+                self.accuracy(class_name),
             )
             for class_name in all_classes
         ]
@@ -112,12 +138,18 @@ class Metric:
     def reset(self):
         self._tps = defaultdict(int)
         self._fps = defaultdict(int)
+        self._tns = defaultdict(int)
         self._fns = defaultdict(int)
 
     #  -------- add_tp -----------
     #
     def add_tp(self, class_name):
         self._tps[class_name] += 1
+
+    #  -------- add_tp -----------
+    #
+    def add_tn(self, class_name):
+        self._tns[class_name] += 1
 
     #  -------- add_fp -----------
     #
@@ -142,6 +174,11 @@ class Metric:
     #
     def get_tp(self, class_name=None):
         return self._get(self._tps, class_name)
+
+    #  -------- get_tn -----------
+    #
+    def get_tn(self, class_name=None):
+        return self._get(self._tns, class_name)
 
     #  -------- get_fp -----------
     #

@@ -43,7 +43,11 @@ class Main:
         )
         evaluate(
             self.model,
-            self.eval
+            self.eval,
+            {
+                0: 'Neutral',
+                1: 'Non-Neutral'
+            }
         )
 
     #
