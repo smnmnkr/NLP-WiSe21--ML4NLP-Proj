@@ -5,6 +5,8 @@ import torch.nn as nn
 
 from torch.optim import Adam
 
+from tqdm import tqdm
+
 from lib.data import batch_loader
 
 
@@ -48,7 +50,7 @@ def train(
 
         train_loss: float = 0.0
 
-        for batch in train_loader:
+        for batch in tqdm(train_loader, leave=False, desc=f"Training Epoch {epoch:02}"):
             model.train()
 
             # zero the parameter gradients
