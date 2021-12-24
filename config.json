@@ -35,7 +35,7 @@
     "learning_rate": 5e-2,
     "weight_decay": 1e-6,
     "gradient_clip": 60.0,
-    "epoch_num": 50,
+    "epoch_num": 5,
     "report_rate": 1,
     "batch_size": 256
   }
