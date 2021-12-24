@@ -1,9 +1,9 @@
 import argparse
 
 from lib.model import Model
-from lib.train import train
 
 from lib.data import Preprocessor, TwitterSentiment
+from lib.tasks import train
 from lib.util import load_json, get_device, flatten
 
 
