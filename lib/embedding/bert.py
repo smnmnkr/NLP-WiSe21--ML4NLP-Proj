@@ -16,7 +16,7 @@ class Bert:
 
         self.dropout = dropout
         self.tokenizer = DistilBertTokenizer.from_pretrained("distilbert-base-uncased")
-        self.model = DistilBertModel.from_pretrained("distilbert-base-uncased")
+        self.model = DistilBertModel.from_pretrained("distilbert-base-uncased").to(get_device())
 
     #
     #
@@ -24,7 +24,7 @@ class Bert:
     #
     @torch.no_grad()
     def forward_row(self, row: dict) -> torch.Tensor:
-        return self.model(**row)[0].to(get_device()).squeeze()
+        return self.model(**row)[0].squeeze()
 
     #
     #
@@ -39,7 +39,7 @@ class Bert:
     #
     def tokenize(self, data: list):
         for row in data:
-            row.update(self.tokenizer(row['text'], return_tensors='pt'))
+            row.update(self.tokenizer(row['text'], return_tensors='pt').to(get_device()))
             del row['text']
 
     #  -------- dimension -----------
