@@ -1,6 +1,6 @@
 import argparse
 
-from lib.embedding import Untrained, FastText, Bert
+from lib.embedding import Base, FastText, Bert
 from lib.model import Model
 from lib.data import Preprocessor, TwitterSentiment
 from lib.tasks import train, evaluate
@@ -28,8 +28,8 @@ class Main:
         self.embedding = None
 
         # load untrained embedding module
-        if self.config["embedding"]["type"] == "untrained":
-            self.embedding = Untrained(
+        if self.config["embedding"]["type"] == "base":
+            self.embedding = Base(
                 data=list(set(flatten([row['text'] for row in self.train]))),
                 **self.config["embedding"]["config"])
 
@@ -45,8 +45,8 @@ class Main:
             self.embedding.tokenize(self.eval)
 
         else:
-            exit(f"Config embedding value '{self.config['embedding']['type']}'"
-                 f"is not a valid option.\nPossible values are: ['untrained', 'fasttext', 'bert']")
+            exit(f"Config embedding value '{self.config['embedding']['type']}' "
+                 f"is not a valid option.\nPossible values are: ['base', 'fasttext', 'bert']")
 
         # load model
         self.model = Model(self.config['model'], self.embedding).to(get_device())

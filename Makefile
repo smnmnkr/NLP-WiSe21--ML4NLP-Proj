@@ -1,8 +1,8 @@
 module := lib
 config_path := config_examples
 
-train_untrained:
-	@python3 -m ${module} -C ${config_path}/train_untrained.json
+train_base:
+	@python3 -m ${module} -C ${config_path}/train_base.json
 
 train_fasttext:
 	@python3 -m ${module} -C ${config_path}/train_fasttext.json
