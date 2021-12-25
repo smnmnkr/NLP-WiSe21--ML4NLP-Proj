@@ -24,14 +24,7 @@ class Bert:
     #
     @torch.no_grad()
     def forward_sent(self, sent: list) -> torch.Tensor:
-
-        tokens = self.tokenizer(
-            sent,
-            return_tensors="pt",
-            truncation=True,
-            padding='max_length',
-            max_length=500)
-
+        tokens = self.tokenizer(sent, return_tensors="pt")
         return self.model(**tokens)[0].to(get_device()).squeeze()
 
     #
