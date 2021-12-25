@@ -23,7 +23,7 @@
   },
   "model": {
     "lstm": {
-      "hid_size": 512,
+      "hid_size": 256,
       "depth": 2,
       "dropout": 0.3
     },
