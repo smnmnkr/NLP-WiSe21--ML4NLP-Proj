@@ -53,20 +53,27 @@ class Main:
     #  -------- __call__ -----------
     #
     def __call__(self):
-        train(
-            self.model,
-            self.train,
-            self.eval,
-            **self.config['trainer']
-        )
-        evaluate(
-            self.model,
-            self.eval,
-            {
-                0: 'Neutral',
-                1: 'Colored'
-            }
-        )
+
+        # try training; expect user interruption
+        try:
+            train(
+                self.model,
+                self.train,
+                self.eval,
+                **self.config['trainer']
+            )
+        except KeyboardInterrupt:
+            print("Training interrupted by User, evaluating last model:")
+
+        finally:
+            evaluate(
+                self.model,
+                self.eval,
+                {
+                    0: 'Neutral',
+                    1: 'Colored'
+                }
+            )
 
     #
     #
