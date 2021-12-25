@@ -32,12 +32,15 @@
       "dropout": 0.3
     }
   },
-  "trainer": {
+  "trainer": {s
     "learning_rate": 5e-4,
     "weight_decay": 1e-6,
     "gradient_clip": 60.0,
     "epoch_num": 40,
     "report_rate": 1,
     "batch_size": 256
+  },
+  "logging": {
+    "path": "results/XX/"
   }
 }
