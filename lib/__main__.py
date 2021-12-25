@@ -66,9 +66,9 @@ class Main:
                 **self.config['trainer']
             )
         except KeyboardInterrupt:
-            print("Training interrupted by User, evaluating last model:")
+            print("Training interrupted by User, try to evaluate last model:")
 
-        finally:
+        try:
             evaluate(
                 self.model,
                 self.eval,
@@ -77,6 +77,9 @@ class Main:
                     1: 'Colored'
                 }
             )
+        except KeyboardInterrupt:
+            print("Evaluation interrupted by User, trying to save model:")
+            self.model.save(self.config["logging"]["path"] + "model")
 
     #
     #
