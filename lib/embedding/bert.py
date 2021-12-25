@@ -32,7 +32,7 @@ class Bert:
             padding='max_length',
             max_length=500)
 
-        return self.model(**tokens)[0].to(get_device())
+        return self.model(**tokens)[0].to(get_device()).squeeze()
 
     #
     #
