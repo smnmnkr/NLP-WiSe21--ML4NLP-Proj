@@ -1,6 +1,6 @@
 import argparse
 
-from lib.embedding import Untrained, FastText
+from lib.embedding import Untrained, FastText, Bert
 from lib.model import Model
 from lib.data import Preprocessor, TwitterSentiment
 from lib.tasks import train, evaluate
@@ -18,7 +18,7 @@ class Main:
 
         # load data and preprocess
         self.data = TwitterSentiment(**self.config['data'])
-        self.data.apply_to_text(Preprocessor())
+        self.data.apply_to_text(Preprocessor(pipeline=self.config['preprocess']))
 
         # convert to list of dicts
         self.train = self.data.to_dict('train')
@@ -36,6 +36,14 @@ class Main:
         # load fasttext module
         elif self.config["embedding"]["type"] == "fasttext":
             self.embedding = FastText(**self.config["embedding"]["config"])
+
+        # load bert module
+        elif self.config["embedding"]["type"] == "bert":
+            self.embedding = Bert()
+
+        else:
+            exit(f"Config embedding value '{self.config['embedding']['type']}'"
+                 f"is not a valid option.\nPossible values are: ['untrained', 'fasttext', 'bert']")
 
         # load model
         self.model = Model(self.config['model'], self.embedding).to(get_device())
