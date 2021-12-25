@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-from lib.nn import MLP, BiLSTM
+from lib.nn import MLP, GRU
 from lib.util import Metric, flatten, get_device
 
 
@@ -21,7 +21,7 @@ class Model(nn.Module):
         self.emb_dropout = nn.Dropout(p=self.embedding.dropout, inplace=False)
 
         # BiLSTM to calculate contextualized word embedding
-        self.context = BiLSTM(
+        self.context = GRU(
             in_size=self.embedding.dimension,
             hid_size=self.config["lstm"]["hid_size"],
             depth=self.config["lstm"]["depth"],
@@ -46,7 +46,7 @@ class Model(nn.Module):
         embed_batch: list = [self.emb_dropout(row) for row in self.embedding.forward_batch(batch)]
 
         # Contextualize embedding with BiLSTM
-        pad_context, mask, (hidden, _) = self.context(embed_batch)
+        pad_context, mask, hidden = self.context(embed_batch)
 
         # Calculate the score using the sum of all context prediction:
         # return [torch.sum(pred, dim=0, keepdim=True) for pred in unpad(self.score(pad_context), mask)]

@@ -5,7 +5,7 @@ import torch.nn as nn
 import torch.nn.utils.rnn as rnn
 
 
-class BiLSTM(nn.Module):
+class GRU(nn.Module):
 
     #
     #
@@ -21,7 +21,7 @@ class BiLSTM(nn.Module):
         super().__init__()
 
         # [LSTM : (Layers -> Dropout)^depth -> Activation]
-        self.net = nn.LSTM(
+        self.net = nn.GRU(
             input_size=in_size,
             hidden_size=hid_size,
             bidirectional=True,
@@ -54,7 +54,7 @@ class BiLSTM(nn.Module):
         )
 
         # Apply LSTM to the packed sequence of word embedding
-        packed_out, (hidden, cell) = self.net(packed_batch)
+        packed_out, hidden = self.net(packed_batch)
 
         # Convert packed representation to a padded representation
         padded_out, mask = rnn.pad_packed_sequence(
@@ -62,4 +62,4 @@ class BiLSTM(nn.Module):
         )
 
         # Return the scores
-        return self.acf(padded_out), mask, (hidden, cell)
+        return self.acf(padded_out), mask, hidden
