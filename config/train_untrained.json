@@ -17,10 +17,10 @@
     "tokenize"
   ],
   "embedding": {
-    "type": "fasttext",
+    "type": "untrained",
     "config": {
-      "data_path": "data/cc.en.300.bin",
-      "dropout": 0.0
+      "dimension": 300,
+      "dropout": 0.3
     }
   },
   "model": {

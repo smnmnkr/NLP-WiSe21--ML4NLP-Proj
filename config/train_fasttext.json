@@ -1,0 +1,46 @@
+{
+  "data": {
+    "train_path": "data/train.csv",
+    "eval_path": "data/eval.csv",
+    "test_path": null
+  },
+  "preprocess": [
+    "hyperlinks",
+    "mentions",
+    "hashtags",
+    "retweet",
+    "repetitions",
+    "emojis",
+    "smileys",
+    "spaces",
+    "punctuation",
+    "tokenize"
+  ],
+  "embedding": {
+    "type": "fasttext",
+    "config": {
+      "data_path": "data/cc.en.300.bin",
+      "dimension": 300,
+      "dropout": 0.3
+    }
+  },
+  "model": {
+    "lstm": {
+      "hid_size": 512,
+      "depth": 2,
+      "dropout": 0.3
+    },
+    "score": {
+      "hid_size": 128,
+      "dropout": 0.3
+    }
+  },
+  "trainer": {
+    "learning_rate": 5e-4,
+    "weight_decay": 1e-6,
+    "gradient_clip": 60.0,
+    "epoch_num": 40,
+    "report_rate": 1,
+    "batch_size": 256
+  }
+}
