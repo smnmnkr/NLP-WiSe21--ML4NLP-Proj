@@ -17,6 +17,7 @@ class Untrained(nn.Module):
 
         # save dimension and create lookup table
         self.dimension: int = dimension
+        self.dropout: float = dropout
         self.lookup: dict = {}
 
         # fill lookup table with data
@@ -29,23 +30,13 @@ class Untrained(nn.Module):
         # save model
         self.model = self.load_model()
 
-        # save dropout
-        self.dropout = nn.Dropout(p=dropout, inplace=False)
-
     #
     #
     #  -------- forward_tok -----------
     #
     def forward_tok(self, tok: str) -> torch.Tensor:
-
-        try:
-            idx = self.lookup[tok]
-
-        except KeyError:
-            idx = self.padding_idx
-
-        emb = self.model(torch.tensor(idx, dtype=torch.long).to(get_device())).to(get_device())
-        return self.dropout(emb)
+        idx: int = self.lookup.get(tok, self.padding_idx)
+        return self.model(torch.tensor(idx, dtype=torch.long).to(get_device())).to(get_device())
 
     #
     #

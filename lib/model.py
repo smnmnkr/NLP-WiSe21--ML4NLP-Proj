@@ -18,6 +18,7 @@ class Model(nn.Module):
         self.config = config
         self.metric = Metric()
         self.embedding = embedding
+        self.emb_dropout = nn.Dropout(p=self.embedding.dropout, inplace=False)
 
         # BiLSTM to calculate contextualized word embedding
         self.context = BiLSTM(
@@ -41,7 +42,8 @@ class Model(nn.Module):
     #
     def forward(self, batch: list) -> list:
 
-        embed_batch: list = self.embedding.forward_batch(batch)
+        # embed batch and apply dropout
+        embed_batch: list = [self.emb_dropout(row) for row in self.embedding.forward_batch(batch)]
 
         # Contextualize embedding with BiLSTM
         pad_context, mask, (hidden, _) = self.context(embed_batch)
