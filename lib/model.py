@@ -21,7 +21,7 @@ class Model(nn.Module):
 
         # BiLSTM to calculate contextualized word embedding
         self.context = BiLSTM(
-            in_size=self.config["lstm"]["in_size"],
+            in_size=self.embedding.dimension,
             hid_size=self.config["lstm"]["hid_size"],
             depth=self.config["lstm"]["depth"],
             dropout=self.config["lstm"]["dropout"],

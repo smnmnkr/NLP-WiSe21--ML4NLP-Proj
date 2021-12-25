@@ -25,7 +25,6 @@
   },
   "model": {
     "lstm": {
-      "in_size": 300,
       "hid_size": 512,
       "depth": 2,
       "dropout": 0.3
