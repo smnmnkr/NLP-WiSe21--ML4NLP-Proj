@@ -41,6 +41,6 @@
     "batch_size": 256
   },
   "logging": {
-    "path": "results/XX/"
+    "path": "results/XX-bert/"
   }
 }

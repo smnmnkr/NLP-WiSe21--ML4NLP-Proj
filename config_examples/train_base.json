@@ -17,7 +17,7 @@
     "tokenize"
   ],
   "embedding": {
-    "type": "untrained",
+    "type": "base",
     "config": {
       "dimension": 300,
       "dropout": 0.3
@@ -43,6 +43,6 @@
     "batch_size": 256
   },
   "logging": {
-    "path": "results/XX/"
+    "path": "results/XX-untrained/"
   }
 }
