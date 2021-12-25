@@ -15,24 +15,32 @@ class Bert:
         logging.set_verbosity_error()
 
         self.dropout = dropout
-        self.tokenizer = DistilBertTokenizer.from_pretrained("distilbert-base-cased")
-        self.model = DistilBertModel.from_pretrained("distilbert-base-cased")
+        self.tokenizer = DistilBertTokenizer.from_pretrained("distilbert-base-uncased")
+        self.model = DistilBertModel.from_pretrained("distilbert-base-uncased")
 
     #
     #
     #  -------- forward_sent -----------
     #
     @torch.no_grad()
-    def forward_sent(self, sent: list) -> torch.Tensor:
-        tokens = self.tokenizer(sent, return_tensors="pt")
-        return self.model(**tokens)[0].to(get_device()).squeeze()
+    def forward_row(self, row: dict) -> torch.Tensor:
+        return self.model(**row)[0].to(get_device()).squeeze()
 
     #
     #
     #  -------- forward_batch -----------
     #
     def forward_batch(self, batch: list) -> list:
-        return [self.forward_sent(sent) for sent in batch]
+        return [self.forward_row(sent) for sent in batch]
+
+    #
+    #
+    #  -------- tokenize -----------
+    #
+    def tokenize(self, data: list):
+        for row in data:
+            row.update(self.tokenizer(row['text'], return_tensors='pt'))
+            del row['text']
 
     #  -------- dimension -----------
     #

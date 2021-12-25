@@ -67,7 +67,15 @@ class Model(nn.Module):
         label_batch: list = []
 
         for row in batch:
-            word_batch.append(row['text'])
+
+            # append bert input: ['input_ids', 'attention_mask]
+            if type(self.embedding).__name__ == "Bert":
+                word_batch.append({'input_ids': row['input_ids'], 'attention_mask': row['attention_mask']})
+
+            # append regular input: 'text tokens'
+            else:
+                word_batch.append(row['text'])
+
             label_batch.append([row['label']])
 
         return self.forward(word_batch), label_batch
@@ -152,6 +160,7 @@ class Model(nn.Module):
                 "config": self.config,
                 "state_dict": self.state_dict(),
                 "metric": self.metric,
+                "embedding": self.embedding
             },
             path + ".pickle",
         )
@@ -163,20 +172,10 @@ class Model(nn.Module):
 
         data = torch.load(path + ".pickle")
 
-        model: nn.Module = cls(data["config"]).to(get_device())
+        model: nn.Module = cls(data["config"], data["embedding"]).to(get_device())
         model.load_state_dict(data["state_dict"])
 
         return model
-
-    #  -------- copy -----------
-    #
-    @classmethod
-    def copy(cls, model: nn.Module) -> nn.Module:
-
-        copy: nn.Module = cls(model.config).to(get_device())
-        copy.load_state_dict(model.state_dict())
-
-        return copy
 
     #  -------- __len__ -----------
     #

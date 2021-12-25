@@ -41,6 +41,9 @@ class Main:
         elif self.config["embedding"]["type"] == "bert":
             self.embedding = Bert()
 
+            self.embedding.tokenize(self.train)
+            self.embedding.tokenize(self.eval)
+
         else:
             exit(f"Config embedding value '{self.config['embedding']['type']}'"
                  f"is not a valid option.\nPossible values are: ['untrained', 'fasttext', 'bert']")
