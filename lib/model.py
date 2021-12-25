@@ -20,17 +20,17 @@ class Model(nn.Module):
         self.embedding = embedding
         self.emb_dropout = nn.Dropout(p=self.embedding.dropout, inplace=False)
 
-        # BiLSTM to calculate contextualized word embedding
+        # RNN to calculate contextualized word embedding
         self.context = GRU(
             in_size=self.embedding.dimension,
-            hid_size=self.config["lstm"]["hid_size"],
-            depth=self.config["lstm"]["depth"],
-            dropout=self.config["lstm"]["dropout"],
+            hid_size=self.config["rnn"]["hid_size"],
+            depth=self.config["rnn"]["depth"],
+            dropout=self.config["rnn"]["dropout"],
         )
 
         # MLP to calculate the POS tags
         self.score = MLP(
-            in_size=self.config["lstm"]["hid_size"] * 2,
+            in_size=self.config["rnn"]["hid_size"] * 2,
             hid_size=self.config["score"]["hid_size"],
             out_size=2,
             dropout=self.config["score"]["dropout"],

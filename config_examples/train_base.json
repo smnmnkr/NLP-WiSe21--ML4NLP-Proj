@@ -24,7 +24,7 @@
     }
   },
   "model": {
-    "lstm": {
+    "rnn": {
       "hid_size": 512,
       "depth": 2,
       "dropout": 0.3

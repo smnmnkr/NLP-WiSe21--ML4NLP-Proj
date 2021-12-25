@@ -20,7 +20,7 @@ class GRU(nn.Module):
     ):
         super().__init__()
 
-        # [LSTM : (Layers -> Dropout)^depth -> Activation]
+        # [GRU : (Layers -> Dropout)^depth -> Activation]
         self.net = nn.GRU(
             input_size=in_size,
             hidden_size=hid_size,
@@ -53,7 +53,7 @@ class GRU(nn.Module):
             batch, enforce_sorted=False
         )
 
-        # Apply LSTM to the packed sequence of word embedding
+        # Apply GRU to the packed sequence of word embedding
         packed_out, hidden = self.net(packed_batch)
 
         # Convert packed representation to a padded representation
