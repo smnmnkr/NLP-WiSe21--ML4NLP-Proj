@@ -18,7 +18,9 @@ class Model(nn.Module):
         self.config = config
         self.metric = Metric()
         self.embedding = embedding
+
         self.emb_dropout = nn.Dropout(p=self.embedding.dropout, inplace=False)
+        self.acf_out = nn.Softmax(dim=1)
 
         # RNN to calculate contextualized word embedding
         self.context = GRU(
@@ -52,7 +54,9 @@ class Model(nn.Module):
         # return [torch.sum(pred, dim=0, keepdim=True) for pred in unpad(self.score(pad_context), mask)]
 
         # Calculate the score using last hidden context state:
-        return torch.split(self.score(torch.cat((hidden[-2, :, :], hidden[-1, :, :]), dim=1)), 1)
+        score = self.score(torch.cat((hidden[-2, :, :], hidden[-1, :, :]), dim=1))
+
+        return torch.split(self.acf_out(score), 1)
 
     #
     #

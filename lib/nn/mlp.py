@@ -17,14 +17,12 @@ class MLP(nn.Module):
     ):
         super().__init__()
 
-        # [Linear -> Dropout -> Activation]
+        # [Linear -> Dropout -> Activation -> Linear]
         self.net = nn.Sequential(
             nn.Linear(in_size, hid_size),
             nn.Dropout(p=dropout, inplace=True),
             nn.LeakyReLU(inplace=True),
-            nn.Linear(hid_size, out_size),
-            nn.Dropout(p=dropout, inplace=True),
-            nn.LeakyReLU(inplace=True),
+            nn.Linear(hid_size, out_size)
         )
 
     #
