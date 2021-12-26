@@ -45,8 +45,9 @@ class TwitterSentiment:
         :return: None
         """
         for _, data in self.prepared.items():
-            data.drop(['id', 'time', 'lang', 'smth'], axis=1, inplace=True)
+            data.drop(['id', 'time', 'lang', 'smth'], axis=1, inplace=True, errors='ignore')
             data.rename(columns={'tweet': 'text', 'sent': 'label'}, inplace=True)
+            data.drop_duplicates(inplace=True)
 
             data['label'] = data['label'].apply(self._convert_label)
 
