@@ -3,7 +3,7 @@ from datetime import datetime
 import torch
 import torch.nn as nn
 
-from torch.optim import Adam
+from torch import optim
 
 from tqdm import tqdm
 
@@ -31,8 +31,8 @@ def train(
     torch.set_grad_enabled(True)
 
     # choose Adam for optimization
-    # https://pytorch.org/docs/stable/optim.html#torch.optim.Adam
-    optimizer = Adam(
+    # https://pytorch.org/docs/stable/generated/torch.optim.RAdam.html
+    optimizer = optim.RAdam(
         model.parameters(),
         lr=learning_rate,
         weight_decay=weight_decay,
