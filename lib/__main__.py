@@ -39,7 +39,7 @@ class Main:
 
         # load bert module
         elif self.config["embedding"]["type"] == "bert":
-            self.embedding = Bert()
+            self.embedding = Bert(**self.config["embedding"]["config"])
 
             self.embedding.tokenize(self.train)
             self.embedding.tokenize(self.eval)

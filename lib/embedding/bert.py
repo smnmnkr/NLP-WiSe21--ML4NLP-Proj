@@ -11,12 +11,13 @@ class Bert:
     #
     #  -------- __init__ -----------
     #
-    def __init__(self, dropout: float = 0.0):
+    def __init__(self, model_name: str = "distilbert-base-uncased", dropout: float = 0.0):
         logging.set_verbosity_error()
 
+        self.model_name = model_name
         self.dropout = dropout
-        self.tokenizer = DistilBertTokenizer.from_pretrained("distilbert-base-uncased")
-        self.model = DistilBertModel.from_pretrained("distilbert-base-uncased").to(get_device())
+        self.tokenizer = DistilBertTokenizer.from_pretrained(self.model_name)
+        self.model = DistilBertModel.from_pretrained(self.model_name).to(get_device())
 
     #
     #

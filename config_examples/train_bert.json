@@ -18,6 +18,7 @@
   "embedding": {
     "type": "bert",
     "config": {
+      "model_name": "distilbert-base-cased",
       "dropout": 0.3
     }
   },
