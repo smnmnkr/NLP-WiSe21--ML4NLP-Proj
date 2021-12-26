@@ -62,4 +62,4 @@ class GRU(nn.Module):
         )
 
         # Return the scores
-        return self.acf(padded_out), mask, hidden
+        return self.acf(padded_out), mask, self.acf(hidden)
