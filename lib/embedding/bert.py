@@ -38,6 +38,7 @@ class Bert:
     #
     #  -------- tokenize -----------
     #
+    @torch.no_grad()
     def tokenize(self, data: list):
         for row in data:
             row.update(self.tokenizer(row['text'], return_tensors='pt').to(get_device()))
