@@ -38,15 +38,16 @@ def train(
         weight_decay=weight_decay,
     )
 
-    # load train set as batched loader
-    train_loader = batch_loader(
-        train_set,
-        batch_size=batch_size,
-    )
-
     # --- perform SGD in a loop
     for epoch in range(1, epoch_num + 1):
         time_begin: datetime = datetime.now()
+
+        # load train set as batched loader
+        train_loader = batch_loader(
+            train_set,
+            batch_size=batch_size,
+            shuffle=True,
+        )
 
         train_loss: float = 0.0
 
