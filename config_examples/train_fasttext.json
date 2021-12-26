@@ -21,7 +21,7 @@
     "config": {
       "data_path": "data/cc.en.300.bin",
       "dimension": 300,
-      "dropout": 0.8
+      "dropout": 0.2
     }
   },
   "model": {
