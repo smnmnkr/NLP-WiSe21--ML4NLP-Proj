@@ -53,4 +53,4 @@ class Bert:
     #  -------- __len__ -----------
     #
     def __len__(self) -> int:
-        return len(self.model.get_words())
+        return self.model.config.to_dict()['vocab_size']
