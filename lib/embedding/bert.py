@@ -30,6 +30,7 @@ class Bert:
     #
     #  -------- forward_batch -----------
     #
+    @torch.no_grad()
     def forward_batch(self, batch: list) -> list:
         return [self.forward_row(sent) for sent in batch]
 
