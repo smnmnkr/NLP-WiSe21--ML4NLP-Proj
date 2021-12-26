@@ -51,7 +51,12 @@ def train(
 
         train_loss: float = 0.0
 
-        for batch in tqdm(train_loader, leave=False, desc=f"Training Epoch {epoch:02}"):
+        for batch in tqdm(
+                train_loader,
+                leave=False,
+                disable=epoch % report_rate != 0,
+                desc=f"Training Epoch {epoch:02}"
+        ):
             model.train()
 
             # zero the parameter gradients
