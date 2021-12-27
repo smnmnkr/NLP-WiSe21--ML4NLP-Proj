@@ -22,6 +22,7 @@ class Main:
         # convert to list of dicts
         self.train = self.data.to_dict('train')
         self.eval = self.data.to_dict('eval')
+        self.test = self.data.to_dict('test')
 
         # prepare embedding
         self.embedding = None
@@ -42,6 +43,7 @@ class Main:
 
             self.embedding.tokenize(self.train)
             self.embedding.tokenize(self.eval)
+            self.embedding.tokenize(self.test)
 
         else:
             exit(f"Config embedding value '{self.config['embedding']['type']}' "
@@ -69,9 +71,9 @@ class Main:
             print("Training interrupted by User, try to evaluate last model:")
 
         try:
-            print("\n[--- EVALUATION ---]")
-            self.evaluate(
-                self.eval,
+            print("\n[--- METRIC ---]")
+            self.show_metric(
+                self.test,
                 {
                     0: 'Neutral',
                     1: 'Colored'
@@ -83,13 +85,15 @@ class Main:
 
     #
     #
-    #  -------- evaluate -----------
+    #  -------- show_metric -----------
     #
-    def evaluate(self, data_set, encoding: dict) -> None:
+    def show_metric(self, data_set, encoding: dict) -> None:
+        self.model.eval()
+        self.model.metric.reset()
 
-        test_loader = batch_loader(data_set)
+        for batch in batch_loader(data_set):
+            _ = self.model.evaluate(batch, reset=False)
 
-        self.model.evaluate(test_loader)
         self.model.metric.show(encoding)
 
     #
