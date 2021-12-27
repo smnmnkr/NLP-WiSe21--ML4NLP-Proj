@@ -40,17 +40,17 @@
     "batch_size": 256,
     "shuffle": true,
     "optimizer": {
-      "lr": 1e-4,
+      "lr": 2e-3,
       "weight_decay": 1e-5,
       "betas": [
         0.9,
-        0.98
+        0.999
       ],
-      "eps": 1e-9
+      "eps": 1e-8
     },
     "stopper": {
       "delta": 2e-2,
-      "patience": 20
+      "patience": 10
     },
     "report_rate": 5,
     "log_dir": "results/XX-example/"
