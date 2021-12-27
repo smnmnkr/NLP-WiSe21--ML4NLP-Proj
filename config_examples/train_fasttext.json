@@ -1,6 +1,6 @@
 {
   "data": {
-    "train_path": "data/train_aug.csv",
+    "train_path": "data/train.csv",
     "eval_path": "data/eval.csv",
     "test_path": null
   },
@@ -39,9 +39,10 @@
     "learning_rate": 1e-3,
     "weight_decay": 1e-5,
     "gradient_clip": 60.0,
-    "epoch_num": 150,
-    "report_rate": 5,
-    "batch_size": 256
+    "epoch_num": 5,
+    "report_rate": 1,
+    "batch_size": 256,
+    "shuffle": true
   },
   "logging": {
     "path": "results/XX-fasttext/"

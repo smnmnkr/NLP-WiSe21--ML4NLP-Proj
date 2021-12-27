@@ -1,9 +1,8 @@
 import argparse
 
+from lib import Model, Trainer
 from lib.embedding import Base, FastText, Bert
-from lib.model import Model
-from lib.data import Preprocessor, TwitterSentiment
-from lib.tasks import train, evaluate
+from lib.data import Preprocessor, TwitterSentiment, batch_loader
 from lib.util import load_json, get_device, flatten
 
 
@@ -59,27 +58,39 @@ class Main:
 
         # try training; expect user interruption
         try:
-            train(
+            print("\n[--- TRAINING ---]")
+            results: dict = Trainer(
                 self.model,
                 self.train,
                 self.eval,
-                **self.config['trainer']
-            )
+                config=self.config['trainer']
+            )()
         except KeyboardInterrupt:
             print("Training interrupted by User, try to evaluate last model:")
 
         try:
-            evaluate(
-                self.model,
+            print("\n[--- EVALUATION ---]")
+            self.evaluate(
                 self.eval,
                 {
                     0: 'Neutral',
                     1: 'Colored'
                 }
             )
+
         except KeyboardInterrupt:
-            print("Evaluation interrupted by User, trying to save model:")
-            self.model.save(self.config["logging"]["path"] + "model")
+            print("Evaluation interrupted by User!")
+
+    #
+    #
+    #  -------- evaluate -----------
+    #
+    def evaluate(self, data_set, encoding: dict) -> None:
+
+        test_loader = batch_loader(data_set)
+
+        self.model.evaluate(test_loader)
+        self.model.metric.show(encoding)
 
     #
     #
