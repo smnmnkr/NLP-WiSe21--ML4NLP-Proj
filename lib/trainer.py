@@ -22,7 +22,6 @@ class Trainer:
             model,
             train_set,
             eval_set,
-            test_set=None,
             config: dict = None):
         self.state: dict = {
             'epoch': 0,
@@ -36,7 +35,6 @@ class Trainer:
         self.data = {
             "train": train_set,
             "eval": eval_set,
-            "test": test_set
         }
 
         if config is None:
@@ -99,7 +97,7 @@ class Trainer:
             for idx, batch in self.load_iterator(self.data["eval"], desc="Eval"):
                 self.model.eval()
                 eval_loss += (self.model.loss(batch) - eval_loss) / (idx + 1)
-                eval_f1 += (self.model.accuracy(batch) - eval_f1) / (idx + 1)
+                eval_f1 += (self.model.evaluate(batch) - eval_f1) / (idx + 1)
 
             self.state["eval_loss"].append(eval_loss)
             self.state["eval_f1"].append(eval_f1)
@@ -135,7 +133,7 @@ class Trainer:
 
         # save loss, acc for statistics
         train_loss += (loss.item() - train_loss) / (batch_id + 1)
-        train_f1 += (self.model.accuracy(batch) - train_f1) / (batch_id + 1)
+        train_f1 += (self.model.evaluate(batch) - train_f1) / (batch_id + 1)
 
         # reduce memory usage by deleting loss after calculation
         # https://discuss.pytorch.org/t/calling-loss-backward-reduce-memory-usage/2735
