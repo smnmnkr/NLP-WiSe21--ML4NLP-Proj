@@ -53,7 +53,7 @@ class Trainer:
     @staticmethod
     def _default_config() -> dict:
         return {
-            "epoch_num": 5,
+            "epoch_num": 100,
             "batch_size": 256,
             "shuffle": True,
             "optimizer": {
@@ -67,7 +67,7 @@ class Trainer:
             },
             "stopper": {
                 "delta": 2e-2,
-                "patience": 20
+                "patience": 10
             },
             "report_rate": 1,
             "log_dir": "./"
