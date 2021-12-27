@@ -101,7 +101,7 @@ class Trainer:
             eval_f1: float = 0.0
             for idx, batch in self.load_iterator(self.data["eval"], epoch=epoch, desc="Eval"):
                 self.model.eval()
-                eval_loss += (self.model.loss(batch) - eval_loss) / (idx + 1)
+                eval_loss += (self.model.loss(batch).item() - eval_loss) / (idx + 1)
                 eval_f1 += (self.model.evaluate(batch) - eval_f1) / (idx + 1)
 
             # --- ---------------------------------
