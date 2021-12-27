@@ -202,9 +202,9 @@ class Trainer:
     #  -------- write_log -----------
     #
     def write_log(self):
-        keys = self.state[0].keys()
+        cols: list = sorted(self.state.keys())
 
-        with open(self.config["log_dir"] + 'train_state.csv', 'w', newline='') as output_file:
-            dict_writer = csv.DictWriter(output_file, keys)
-            dict_writer.writeheader()
-            dict_writer.writerows(self.state)
+        with open(self.config["log_dir"] + 'train_state.csv', 'wb') as output_file:
+            writer = csv.DictWriter(output_file, delimiter=",")
+            writer.writerow(cols)
+            writer.writerows(zip(*[self.state[c] for c in cols]))
