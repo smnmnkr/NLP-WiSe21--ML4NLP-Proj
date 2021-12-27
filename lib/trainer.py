@@ -58,13 +58,15 @@ class Trainer:
     #
     @staticmethod
     def _default_config() -> dict:
-        return {"learning_rate": 1e-3,
-                "weight_decay": 1e-5,
-                "gradient_clip": 60.0,
-                "epoch_num": 20,
-                "report_rate": 1,
-                "batch_size": 128,
-                "shuffle": True}
+        return {
+            "learning_rate": 1e-3,
+            "weight_decay": 1e-5,
+            "gradient_clip": 60.0,
+            "epoch_num": 20,
+            "report_rate": 1,
+            "batch_size": 128,
+            "shuffle": True,
+        }
 
     #
     #
@@ -80,7 +82,8 @@ class Trainer:
             time_begin: datetime = datetime.now()
             self.state["epoch"] = epoch
 
-            # begin train
+            # --- ---------------------------------
+            # --- begin train
             train_loss: float = 0.0
             train_f1: float = 0.0
             for idx, batch in self.load_iterator(self.data["train"], desc="Train"):
@@ -89,7 +92,8 @@ class Trainer:
             self.state["train_loss"].append(train_loss)
             self.state["train_f1"].append(train_f1)
 
-            # begin evaluate
+            # --- ---------------------------------
+            # --- begin evaluate
             eval_loss: float = 0.0
             eval_f1: float = 0.0
             for idx, batch in self.load_iterator(self.data["eval"], desc="Eval"):
@@ -100,11 +104,13 @@ class Trainer:
             self.state["eval_loss"].append(eval_loss)
             self.state["eval_f1"].append(eval_f1)
 
-            # --- if is reporting epoch
+            # --- ---------------------------------
+            # --- log to user
             if epoch % self.config["report_rate"] == 0:
                 self.log(epoch, datetime.now() - time_begin)
 
-            return self.state
+        # return train state to main
+        return self.state
 
     #
     #
