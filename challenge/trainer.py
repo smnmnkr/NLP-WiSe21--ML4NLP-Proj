@@ -67,7 +67,7 @@ class Trainer:
                 "eps": 1e-9
             },
             "stopper": {
-                "delta": 2e-2,
+                "delta": 1e-3,
                 "patience": 10
             },
             "report_rate": 1,
