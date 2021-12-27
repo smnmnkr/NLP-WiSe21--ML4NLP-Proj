@@ -24,24 +24,34 @@
   },
   "model": {
     "rnn": {
-      "hid_size": 128,
-      "depth": 2,
-      "dropout": 0.3
+      "hid_size": 256,
+      "depth": 3,
+      "dropout": 0.8
     },
     "score": {
-      "hid_size": 64,
-      "dropout": 0.3
+      "hid_size": 128,
+      "dropout": 0.8
     }
   },
   "trainer": {
-    "learning_rate": 5e-4,
-    "weight_decay": 1e-6,
-    "gradient_clip": 60.0,
-    "epoch_num": 40,
-    "report_rate": 1,
-    "batch_size": 256
+    "epoch_num": 160,
+    "batch_size": 256,
+    "shuffle": true,
+    "optimizer": {
+      "lr": 2e-3,
+      "weight_decay": 1e-5,
+      "betas": [
+        0.9,
+        0.999
+      ],
+      "eps": 1e-8
+    },
+    "stopper": {
+      "delta": 1e-3,
+      "patience": 20
+    },
+    "report_rate": 5,
+    "log_dir": "results/_tmp/"
   },
-  "logging": {
-    "path": "results/XX-bert/"
-  }
+  "seed": 42
 }
