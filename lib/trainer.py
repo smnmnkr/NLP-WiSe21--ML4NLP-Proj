@@ -54,6 +54,20 @@ class Trainer:
 
     #
     #
+    #  -------- _default_config -----------
+    #
+    @staticmethod
+    def _default_config() -> dict:
+        return {"learning_rate": 1e-3,
+                "weight_decay": 1e-5,
+                "gradient_clip": 60.0,
+                "epoch_num": 150,
+                "report_rate": 5,
+                "batch_size": 256,
+                "shuffle": True}
+
+    #
+    #
     #  -------- __call__ -----------
     #
     def __call__(self) -> dict:
@@ -67,22 +81,19 @@ class Trainer:
             self.state["epoch"] = epoch
 
             # begin train
-            self.model.train()
             train_loss: float = 0.0
             train_f1: float = 0.0
-
-            for idx, batch in self.load_iterator(self.data["train"]):
+            for idx, batch in self.load_iterator(self.data["train"], desc="Train"):
                 train_f1, train_loss = self.train(batch, idx, train_f1, train_loss)
 
             self.state["train_loss"].append(train_loss)
             self.state["train_f1"].append(train_f1)
 
             # begin evaluate
-            self.model.eval()
             eval_loss: float = 0.0
             eval_f1: float = 0.0
-
-            for idx, batch in self.load_iterator(self.data["eval"]):
+            for idx, batch in self.load_iterator(self.data["eval"], desc="Eval"):
+                self.model.eval()
                 eval_loss += (self.model.loss(batch) - train_loss) / (idx + 1)
                 eval_f1 += (self.model.accuracy(batch) - train_f1) / (idx + 1)
 
@@ -97,25 +108,10 @@ class Trainer:
 
     #
     #
-    #  -------- log -----------
-    #
-    def log(self, epoch: int, duration: timedelta):
-        print((
-            "[--- "
-            f"@{epoch:03}: \t"
-            f"loss(train)={self.state['train_loss'][epoch - 1]:2.4f} \t"
-            f"loss(eval)={self.state['eval_loss'][epoch - 1]:2.4f} \t"
-            f"f1(train)={self.state['train_f1'][epoch - 1]:2.4f} \t"
-            f"f1(eval)={self.state['eval_f1'][epoch - 1]:2.4f} \t"
-            f"time(epoch)={duration}"
-            "---]"
-        ))
-
-    #
-    #
     #  -------- train -----------
     #
     def train(self, batch: dict, batch_id: int, train_f1: float, train_loss: float) -> Tuple[float, float]:
+        self.model.train()
 
         # zero the parameter gradients
         self.optimizer.zero_grad()
@@ -145,7 +141,7 @@ class Trainer:
     #
     #  -------- load_iterator -----------
     #
-    def load_iterator(self, data):
+    def load_iterator(self, data, desc: str):
         return enumerate(tqdm(
             batch_loader(
                 data,
@@ -154,19 +150,21 @@ class Trainer:
             ),
             leave=False,
             disable=self.state["epoch"] % self.config["report_rate"] != 0,
-            desc=f"Training Epoch {self.state['epoch']:02}"
+            desc=f"{desc} on {self.state['epoch']:02}"
         ))
 
     #
     #
-    #  -------- _default_config -----------
+    #  -------- log -----------
     #
-    @staticmethod
-    def _default_config() -> dict:
-        return {"learning_rate": 1e-3,
-                "weight_decay": 1e-5,
-                "gradient_clip": 60.0,
-                "epoch_num": 150,
-                "report_rate": 5,
-                "batch_size": 256,
-                "shuffle": True}
+    def log(self, epoch: int, duration: timedelta):
+        print((
+            "[--- "
+            f"@{epoch:03}: \t"
+            f"loss(train)={self.state['train_loss'][epoch - 1]:2.4f} \t"
+            f"loss(eval)={self.state['eval_loss'][epoch - 1]:2.4f} \t"
+            f"f1(train)={self.state['train_f1'][epoch - 1]:2.4f} \t"
+            f"f1(eval)={self.state['eval_f1'][epoch - 1]:2.4f} \t"
+            f"time(epoch)={duration}"
+            "---]"
+        ))
