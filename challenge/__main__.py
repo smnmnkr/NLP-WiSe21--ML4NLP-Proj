@@ -101,19 +101,6 @@ class Main:
 
     #
     #
-    #  -------- show_metric -----------
-    #
-    def show_metric(self, data_set, encoding: dict) -> None:
-        self.model.eval()
-        self.model.metric.reset()
-
-        for batch in batch_loader(data_set):
-            _ = self.model.evaluate(batch, reset=False)
-
-        self.model.metric.show(encoding)
-
-    #
-    #
     #  -------- load_config -----------
     #
     def load_config(self) -> dict:
@@ -128,6 +115,19 @@ class Main:
         )
         args = parser.parse_args()
         return load_json(args.config)
+
+    #
+    #
+    #  -------- show_metric -----------
+    #
+    def show_metric(self, data_set, encoding: dict) -> None:
+        self.model.eval()
+        self.model.metric.reset()
+
+        for batch in batch_loader(data_set):
+            _ = self.model.evaluate(batch, reset=False)
+
+        self.model.metric.show(encoding)
 
 
 #
