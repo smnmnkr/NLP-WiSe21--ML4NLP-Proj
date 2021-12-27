@@ -205,6 +205,6 @@ class Trainer:
         cols: list = sorted(self.state.keys())
 
         with open(self.config["log_dir"] + 'train_state.csv', 'wb') as output_file:
-            writer = csv.DictWriter(output_file, delimiter=",")
+            writer = csv.writer(output_file, delimiter=",")
             writer.writerow(cols)
             writer.writerows(zip(*[self.state[c] for c in cols]))
