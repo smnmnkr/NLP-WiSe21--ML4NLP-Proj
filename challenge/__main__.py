@@ -1,8 +1,11 @@
 import argparse
+import random
+
+import torch
 
 from challenge import Model, Trainer
-from challenge.embedding import Base, FastText, Bert
 from challenge.data import Preprocessor, TwitterSentiment, batch_loader
+from challenge.embedding import Base, FastText, Bert
 from challenge.util import load_json, get_device, flatten
 
 
@@ -14,6 +17,7 @@ class Main:
     def __init__(self):
         self.description: str = "Twitter Sentiment Analysis"
         self.config: dict = self.load_config()
+        self.setup_pytorch()
 
         # load data and preprocess
         self.data = TwitterSentiment(**self.config['data'])
@@ -82,6 +86,18 @@ class Main:
 
         except KeyboardInterrupt:
             print("Evaluation interrupted by User!")
+
+    #
+    #
+    #  -------- setup_pytorch -----------
+    #
+    def setup_pytorch(self):
+        # make pytorch computations deterministic
+        # src: https://pytorch.org/docs/stable/notes/randomness.html
+        random.seed(self.config['seed'])
+        torch.manual_seed(self.config['seed'])
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
 
     #
     #

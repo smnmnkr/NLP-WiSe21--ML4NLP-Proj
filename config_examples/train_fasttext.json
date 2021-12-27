@@ -54,5 +54,6 @@
     },
     "report_rate": 5,
     "log_dir": "results/XX-example/"
-  }
+  },
+  "seed": 42
 }
