@@ -122,7 +122,7 @@ class Trainer:
                 self.model.save(self.config["log_dir"] + "model")
 
             if self.stopper.should_stop:
-                print("Early stopping interrupted training")
+                print("Early stopping interrupted training.")
                 break
 
             # --- ---------------------------------
@@ -131,6 +131,7 @@ class Trainer:
                 self.log(epoch)
 
         # load last save model
+        print("Load best model based on evaluation loss.")
         self.model = self.model.load(self.config["log_dir"] + "model", self.model.embedding)
         self.log(saved_model_epoch)
 
@@ -187,14 +188,12 @@ class Trainer:
     #
     def log(self, epoch: int):
         print((
-            "[--- "
             f"@{epoch:03}: \t"
             f"loss(train)={self.state['train_loss'][epoch - 1]:2.4f} \t"
             f"loss(eval)={self.state['eval_loss'][epoch - 1]:2.4f} \t"
             f"f1(train)={self.state['train_f1'][epoch - 1]:2.4f} \t"
             f"f1(eval)={self.state['eval_f1'][epoch - 1]:2.4f} \t"
             f"duration(epoch)={self.state['duration'][epoch - 1]}"
-            "---]"
         ))
 
     #
