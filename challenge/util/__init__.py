@@ -15,3 +15,4 @@ from .functional import (
 
 from .metric import Metric
 from .encoding import Encoding
+from .earlystopping import EarlyStopping
