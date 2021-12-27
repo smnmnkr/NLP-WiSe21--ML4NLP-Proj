@@ -1,9 +1,9 @@
-from datetime import datetime, timedelta
+import csv
+from datetime import datetime
 from typing import Tuple
 
 import torch
 from torch import optim
-
 from tqdm import tqdm
 
 from challenge.data import batch_loader
@@ -23,11 +23,12 @@ class Trainer:
             eval_set,
             config: dict = None):
         self.state: dict = {
-            'epoch': 0,
+            'epoch': [],
             'train_loss': [],
             'train_f1': [],
             'eval_loss': [],
-            'eval_f1': []
+            'eval_f1': [],
+            'duration': [],
         }
 
         self.model = model
@@ -78,6 +79,7 @@ class Trainer:
     #  -------- __call__ -----------
     #
     def __call__(self) -> dict:
+        saved_model_epoch: int = 0
 
         # enable gradients
         torch.set_grad_enabled(True)
@@ -85,35 +87,38 @@ class Trainer:
         # --- epoch loop
         for epoch in range(1, self.config["epoch_num"] + 1):
             time_begin: datetime = datetime.now()
-            self.state["epoch"] = epoch
 
             # --- ---------------------------------
             # --- begin train
             train_loss: float = 0.0
             train_f1: float = 0.0
-            for idx, batch in self.load_iterator(self.data["train"], desc="Train"):
+            for idx, batch in self.load_iterator(self.data["train"], epoch=epoch, desc="Train"):
                 train_f1, train_loss = self.train(batch, idx, train_f1, train_loss)
-
-            self.state["train_loss"].append(train_loss)
-            self.state["train_f1"].append(train_f1)
 
             # --- ---------------------------------
             # --- begin evaluate
             eval_loss: float = 0.0
             eval_f1: float = 0.0
-            for idx, batch in self.load_iterator(self.data["eval"], desc="Eval"):
+            for idx, batch in self.load_iterator(self.data["eval"], epoch=epoch, desc="Eval"):
                 self.model.eval()
                 eval_loss += (self.model.loss(batch) - eval_loss) / (idx + 1)
                 eval_f1 += (self.model.evaluate(batch) - eval_f1) / (idx + 1)
 
+            # --- ---------------------------------
+            # --- update state
+            self.state["epoch"].append(epoch)
+            self.state["train_loss"].append(train_loss)
+            self.state["train_f1"].append(train_f1)
             self.state["eval_loss"].append(eval_loss)
             self.state["eval_f1"].append(eval_f1)
+            self.state["duration"].append(datetime.now() - time_begin)
 
             # --- ---------------------------------
             # --- handle early stopping
             self.stopper.step(self.state["eval_loss"][-1])
 
             if self.stopper.should_save:
+                saved_model_epoch = self.state["epoch"][-1]
                 self.model.save(self.config["log_dir"] + "model")
 
             if self.stopper.should_stop:
@@ -123,12 +128,14 @@ class Trainer:
             # --- ---------------------------------
             # --- log to user
             if epoch % self.config["report_rate"] == 0:
-                self.log(epoch, datetime.now() - time_begin)
+                self.log(epoch)
 
         # load last save model
         self.model = self.model.load(self.config["log_dir"] + "model", self.model.embedding)
+        self.log(saved_model_epoch)
 
-        # return train state to main
+        # return and write train state to main
+        self.write_log()
         return self.state
 
     #
@@ -162,7 +169,7 @@ class Trainer:
     #
     #  -------- load_iterator -----------
     #
-    def load_iterator(self, data, desc: str):
+    def load_iterator(self, data, epoch: int, desc: str):
         return enumerate(tqdm(
             batch_loader(
                 data,
@@ -170,15 +177,15 @@ class Trainer:
                 shuffle=self.config["shuffle"],
             ),
             leave=False,
-            disable=self.state["epoch"] % self.config["report_rate"] != 0,
-            desc=f"{desc}, epoch: {self.state['epoch']:03}"
+            disable=epoch % self.config["report_rate"] != 0,
+            desc=f"{desc}, epoch: {epoch:03}"
         ))
 
     #
     #
     #  -------- log -----------
     #
-    def log(self, epoch: int, duration: timedelta):
+    def log(self, epoch: int):
         print((
             "[--- "
             f"@{epoch:03}: \t"
@@ -186,6 +193,18 @@ class Trainer:
             f"loss(eval)={self.state['eval_loss'][epoch - 1]:2.4f} \t"
             f"f1(train)={self.state['train_f1'][epoch - 1]:2.4f} \t"
             f"f1(eval)={self.state['eval_f1'][epoch - 1]:2.4f} \t"
-            f"time(epoch)={duration}"
+            f"duration(epoch)={self.state['duration'][epoch - 1]}"
             "---]"
         ))
+
+    #
+    #
+    #  -------- write_log -----------
+    #
+    def write_log(self):
+        keys = self.state[0].keys()
+
+        with open(self.config["log_dir"] + 'train_state.csv', 'w', newline='') as output_file:
+            dict_writer = csv.DictWriter(output_file, keys)
+            dict_writer.writeheader()
+            dict_writer.writerows(self.state)
