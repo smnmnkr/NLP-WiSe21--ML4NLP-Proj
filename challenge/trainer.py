@@ -8,6 +8,7 @@ from torch import optim
 from tqdm import tqdm
 
 from challenge.data import batch_loader
+from challenge.util import EarlyStopping
 
 
 class Trainer:
@@ -43,11 +44,8 @@ class Trainer:
 
         # choose Adam for optimization
         # https://pytorch.org/docs/stable/generated/torch.optim.RAdam.html
-        self.optimizer = optim.RAdam(
-            self.model.parameters(),
-            lr=self.config["learning_rate"],
-            weight_decay=self.config["weight_decay"],
-        )
+        self.optimizer = optim.RAdam(self.model.parameters(), **self.config["optimizer"])
+        self.stopper = EarlyStopping(**self.config["stopper"])
 
     #
     #
@@ -56,13 +54,24 @@ class Trainer:
     @staticmethod
     def _default_config() -> dict:
         return {
-            "learning_rate": 1e-3,
-            "weight_decay": 1e-5,
-            "gradient_clip": 60.0,
-            "epoch_num": 20,
-            "report_rate": 1,
-            "batch_size": 128,
+            "epoch_num": 5,
+            "batch_size": 256,
             "shuffle": True,
+            "optimizer": {
+                "lr": 1e-4,
+                "weight_decay": 1e-5,
+                "betas": [
+                    0.9,
+                    0.98
+                ],
+                "eps": 1e-9
+            },
+            "stopper": {
+                "delta": 2e-2,
+                "patience": 20
+            },
+            "report_rate": 1,
+            "log_dir": "./"
         }
 
     #
@@ -102,9 +111,23 @@ class Trainer:
             self.state["eval_f1"].append(eval_f1)
 
             # --- ---------------------------------
+            # --- handle early stopping
+            self.stopper.step(self.state["eval_loss"][-1])
+
+            if self.stopper.should_save:
+                self.model.save(self.config["log_dir"] + "model")
+
+            if self.stopper.should_stop:
+                print("Early stopping interrupted training")
+                break
+
+            # --- ---------------------------------
             # --- log to user
             if epoch % self.config["report_rate"] == 0:
                 self.log(epoch, datetime.now() - time_begin)
+
+        # load last save model
+        self.model = self.model.load(self.config["log_dir"] + "model")
 
         # return train state to main
         return self.state
@@ -123,11 +146,7 @@ class Trainer:
         loss = self.model.loss(batch)
         loss.backward()
 
-        # scaling the gradients down, places a limit on the size of the parameter updates
-        # https://pytorch.org/docs/stable/nn.html#clip-grad-norm
-        nn.utils.clip_grad_norm_(self.model.parameters(), self.config["gradient_clip"])
-
-        # optimize
+        # optimizer step
         self.optimizer.step()
 
         # save loss, acc for statistics
