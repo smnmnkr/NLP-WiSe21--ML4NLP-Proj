@@ -146,7 +146,6 @@ class Model(nn.Module):
                 "config": self.config,
                 "state_dict": self.state_dict(),
                 "metric": self.metric,
-                "embedding": self.embedding
             },
             path + ".pickle",
         )
@@ -154,11 +153,11 @@ class Model(nn.Module):
     #  -------- load -----------
     #
     @classmethod
-    def load(cls, path: str) -> nn.Module:
+    def load(cls, path: str, embedding) -> nn.Module:
 
         data = torch.load(path + ".pickle")
 
-        model: nn.Module = cls(data["config"], data["embedding"]).to(get_device())
+        model: nn.Module = cls(data["config"], embedding).to(get_device())
         model.load_state_dict(data["state_dict"])
 
         return model

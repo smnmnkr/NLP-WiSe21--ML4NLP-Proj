@@ -2,7 +2,6 @@ from datetime import datetime, timedelta
 from typing import Tuple
 
 import torch
-import torch.nn as nn
 from torch import optim
 
 from tqdm import tqdm
@@ -127,7 +126,7 @@ class Trainer:
                 self.log(epoch, datetime.now() - time_begin)
 
         # load last save model
-        self.model = self.model.load(self.config["log_dir"] + "model")
+        self.model = self.model.load(self.config["log_dir"] + "model", self.model.embedding)
 
         # return train state to main
         return self.state
