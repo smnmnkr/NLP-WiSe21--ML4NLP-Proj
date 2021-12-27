@@ -1,7 +1,7 @@
 import torch
 from transformers import DistilBertModel, DistilBertTokenizer, logging
 
-from lib.util import get_device
+from challenge.util import get_device
 
 
 class Bert:

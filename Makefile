@@ -1,4 +1,4 @@
-module := lib
+module := challenge
 config_path := config_examples
 
 train_base:

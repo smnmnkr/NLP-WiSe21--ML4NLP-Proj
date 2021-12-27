@@ -1,8 +1,8 @@
 import torch
 import torch.nn as nn
 
-from lib.nn import MLP, GRU
-from lib.util import Metric, flatten, get_device
+from challenge.nn import MLP, GRU
+from challenge.util import Metric, flatten, get_device
 
 
 class Model(nn.Module):

@@ -3,12 +3,11 @@ from typing import Tuple
 
 import torch
 import torch.nn as nn
-
 from torch import optim
 
 from tqdm import tqdm
 
-from lib.data import batch_loader
+from challenge.data import batch_loader
 
 
 class Trainer:

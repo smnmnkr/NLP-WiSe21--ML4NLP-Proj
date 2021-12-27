@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-from lib.util import get_device
+from challenge.util import get_device
 
 
 class Base(nn.Module):

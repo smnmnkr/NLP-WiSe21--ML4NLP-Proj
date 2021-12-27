@@ -1,0 +1,92 @@
+config: {
+  "data": {
+    "train_path": "data/train.csv",
+    "eval_path": "data/eval.csv",
+    "test_path": null
+  },
+  "preprocess": [
+    "hyperlinks",
+    "mentions",
+    "hashtags",
+    "retweet",
+    "repetitions",
+    "emojis",
+    "smileys",
+    "spaces",
+    "punctuation"
+  ],
+  "embedding": {
+    "type": "bert",
+    "config": {
+      "model_name": "distilbert-base-cased",
+      "dropout": 0.3
+    }
+  },
+  "model": {
+    "rnn": {
+      "hid_size": 512,
+      "depth": 2,
+      "dropout": 0.3
+    },
+    "score": {
+      "hid_size": 128,
+      "dropout": 0.3
+    }
+  },
+  "trainer": {
+    "learning_rate": 5e-4,
+    "weight_decay": 1e-6,
+    "gradient_clip": 60.0,
+    "epoch_num": 40,
+    "report_rate": 1,
+    "batch_size": 256
+  },
+  "logging": {
+    "path": "results/XX-bert/"
+  }
+}
+[--- TRAINING ---]
+[--- @01:        loss(train)=0.6457      f1(train)=0.6528        f1(eval)=0.6519         time(epoch)=0:04:12.000620 ---]                                  [--- @02:        loss(train)=0.6217      f1(train)=0.6686        f1(eval)=0.6626         time(epoch)=0:04:13.289935 ---]
+[--- @03:        loss(train)=0.6123      f1(train)=0.6635        f1(eval)=0.6591         time(epoch)=0:04:10.341747 ---]
+[--- @04:        loss(train)=0.6064      f1(train)=0.6887        f1(eval)=0.6816         time(epoch)=0:04:14.108731 ---]
+[--- @05:        loss(train)=0.5996      f1(train)=0.7058        f1(eval)=0.6920         time(epoch)=0:04:13.696228 ---]
+[--- @06:        loss(train)=0.5936      f1(train)=0.7000        f1(eval)=0.6825         time(epoch)=0:04:15.197219 ---]
+[--- @07:        loss(train)=0.5871      f1(train)=0.6943        f1(eval)=0.6776         time(epoch)=0:04:17.553383 ---]
+[--- @08:        loss(train)=0.5813      f1(train)=0.7205        f1(eval)=0.6982         time(epoch)=0:04:15.419920 ---]
+[--- @09:        loss(train)=0.5719      f1(train)=0.7236        f1(eval)=0.6999         time(epoch)=0:04:17.299282 ---]
+[--- @10:        loss(train)=0.5667      f1(train)=0.7289        f1(eval)=0.7035         time(epoch)=0:04:16.493251 ---]
+[--- @11:        loss(train)=0.5613      f1(train)=0.7344        f1(eval)=0.7013         time(epoch)=0:04:13.090215 ---]
+[--- @12:        loss(train)=0.5530      f1(train)=0.7475        f1(eval)=0.7027         time(epoch)=0:04:15.018480 ---]
+[--- @13:        loss(train)=0.5447      f1(train)=0.7410        f1(eval)=0.6961         time(epoch)=0:04:10.966126 ---]
+[--- @14:        loss(train)=0.5343      f1(train)=0.7566        f1(eval)=0.6948         time(epoch)=0:04:11.174916 ---]
+[--- @15:        loss(train)=0.5318      f1(train)=0.7723        f1(eval)=0.6876         time(epoch)=0:04:11.857615 ---]
+[--- @16:        loss(train)=0.5126      f1(train)=0.7814        f1(eval)=0.6909         time(epoch)=0:04:11.425031 ---]
+[--- @17:        loss(train)=0.5069      f1(train)=0.7902        f1(eval)=0.6906         time(epoch)=0:04:11.338073 ---]
+[--- @18:        loss(train)=0.4908      f1(train)=0.7992        f1(eval)=0.6808         time(epoch)=0:04:09.089940 ---]
+[--- @19:        loss(train)=0.4719      f1(train)=0.8086        f1(eval)=0.6749         time(epoch)=0:04:12.061914 ---]
+[--- @20:        loss(train)=0.4611      f1(train)=0.8185        f1(eval)=0.6814         time(epoch)=0:04:13.035438 ---]
+[--- @21:        loss(train)=0.4439      f1(train)=0.8335        f1(eval)=0.6801         time(epoch)=0:04:08.946513 ---]
+[--- @22:        loss(train)=0.4204      f1(train)=0.8430        f1(eval)=0.6827         time(epoch)=0:04:13.037245 ---]
+[--- @23:        loss(train)=0.4063      f1(train)=0.8568        f1(eval)=0.6831         time(epoch)=0:04:17.443212 ---]
+[--- @24:        loss(train)=0.3912      f1(train)=0.8453        f1(eval)=0.6811         time(epoch)=0:04:18.464509 ---]
+[--- @25:        loss(train)=0.3819      f1(train)=0.8722        f1(eval)=0.6678         time(epoch)=0:04:16.484500 ---]
+[--- @26:        loss(train)=0.3573      f1(train)=0.8828        f1(eval)=0.6787         time(epoch)=0:04:14.442675 ---]
+[--- @27:        loss(train)=0.3384      f1(train)=0.8706        f1(eval)=0.6582         time(epoch)=0:04:18.247658 ---]
+[--- @28:        loss(train)=0.3332      f1(train)=0.8990        f1(eval)=0.6699         time(epoch)=0:04:17.396131 ---]
+[--- @29:        loss(train)=0.3125      f1(train)=0.8909        f1(eval)=0.6670         time(epoch)=0:04:13.588685 ---]
+[--- @30:        loss(train)=0.2986      f1(train)=0.8983        f1(eval)=0.6702         time(epoch)=0:04:11.085157 ---]
+[--- @31:        loss(train)=0.2762      f1(train)=0.8836        f1(eval)=0.6482         time(epoch)=0:04:13.278484 ---]
+[--- @32:        loss(train)=0.2774      f1(train)=0.9053        f1(eval)=0.6617         time(epoch)=0:04:08.285144 ---]
+[--- @33:        loss(train)=0.2536      f1(train)=0.9342        f1(eval)=0.6625         time(epoch)=0:04:08.214876 ---]
+[--- @34:        loss(train)=0.2432      f1(train)=0.9435        f1(eval)=0.6696         time(epoch)=0:04:22.092815 ---]
+[--- @35:        loss(train)=0.2256      f1(train)=0.9502        f1(eval)=0.6721         time(epoch)=0:04:26.298737 ---]
+[--- @36:        loss(train)=0.2232      f1(train)=0.9530        f1(eval)=0.6735         time(epoch)=0:04:17.654131 ---]
+[--- @37:        loss(train)=0.2194      f1(train)=0.9459        f1(eval)=0.6741         time(epoch)=0:04:16.890767 ---]
+[--- @38:        loss(train)=0.2098      f1(train)=0.9506        f1(eval)=0.6748         time(epoch)=0:04:19.413916 ---]
+[--- @39:        loss(train)=0.2015      f1(train)=0.9493        f1(eval)=0.6727         time(epoch)=0:04:22.945233 ---]
+[--- @40:        loss(train)=0.1883      f1(train)=0.9624        f1(eval)=0.6765         time(epoch)=0:04:16.712411 ---]
+
+[--- EVALUATION ---]
+[--- AVG         tp:  4283       fp:  2048       tn:  4283       fn:  2048       prec=0.677      rec=0.677       f1=0.677        acc=0.677---]
+[--- Neutral     tp:  1922       fp:   904       tn:  1922       fn:  1144       prec=0.680      rec=0.627       f1=0.652        acc=0.652---]
+[--- Colored     tp:  2361       fp:  1144       tn:  2361       fn:   904       prec=0.674      rec=0.723       f1=0.697        acc=0.697---]

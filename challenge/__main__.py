@@ -1,9 +1,9 @@
 import argparse
 
-from lib import Model, Trainer
-from lib.embedding import Base, FastText, Bert
-from lib.data import Preprocessor, TwitterSentiment, batch_loader
-from lib.util import load_json, get_device, flatten
+from challenge import Model, Trainer
+from challenge.embedding import Base, FastText, Bert
+from challenge.data import Preprocessor, TwitterSentiment, batch_loader
+from challenge.util import load_json, get_device, flatten
 
 
 class Main:

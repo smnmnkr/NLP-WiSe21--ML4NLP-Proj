@@ -2,7 +2,7 @@ import fasttext
 import fasttext.util
 import torch
 
-from lib.util import get_device
+from challenge.util import get_device
 
 
 class FastText:
