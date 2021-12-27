@@ -36,7 +36,7 @@
     }
   },
   "trainer": {
-    "epoch_num": 150,
+    "epoch_num": 1,
     "batch_size": 256,
     "shuffle": true,
     "optimizer": {
@@ -52,7 +52,7 @@
       "delta": 2e-2,
       "patience": 20
     },
-    "report_rate": 5,
+    "report_rate": 1,
     "log_dir": "results/XX-example/"
   }
 }
