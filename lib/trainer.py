@@ -61,9 +61,9 @@ class Trainer:
         return {"learning_rate": 1e-3,
                 "weight_decay": 1e-5,
                 "gradient_clip": 60.0,
-                "epoch_num": 150,
-                "report_rate": 5,
-                "batch_size": 256,
+                "epoch_num": 20,
+                "report_rate": 1,
+                "batch_size": 128,
                 "shuffle": True}
 
     #
@@ -94,8 +94,8 @@ class Trainer:
             eval_f1: float = 0.0
             for idx, batch in self.load_iterator(self.data["eval"], desc="Eval"):
                 self.model.eval()
-                eval_loss += (self.model.loss(batch) - train_loss) / (idx + 1)
-                eval_f1 += (self.model.accuracy(batch) - train_f1) / (idx + 1)
+                eval_loss += (self.model.loss(batch) - eval_loss) / (idx + 1)
+                eval_f1 += (self.model.accuracy(batch) - eval_f1) / (idx + 1)
 
             self.state["eval_loss"].append(eval_loss)
             self.state["eval_f1"].append(eval_f1)
@@ -150,7 +150,7 @@ class Trainer:
             ),
             leave=False,
             disable=self.state["epoch"] % self.config["report_rate"] != 0,
-            desc=f"{desc} on {self.state['epoch']:02}"
+            desc=f"{desc}, epoch: {self.state['epoch']:03}"
         ))
 
     #
