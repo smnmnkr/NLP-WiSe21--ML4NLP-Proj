@@ -102,10 +102,10 @@ class Model(nn.Module):
 
     #
     #
-    #  -------- accuracy -----------
+    #  -------- evaluate -----------
     #
     @torch.no_grad()
-    def accuracy(
+    def evaluate(
             self,
             batch: list,
             reset: bool = True,
@@ -134,24 +134,6 @@ class Model(nn.Module):
                 if p_idx != g:
                     self.metric.add_fp(p_idx)
                     self.metric.add_fn(g)
-
-        return self.metric.f_score(class_name=category)
-
-    #
-    #
-    #  -------- evaluate -----------
-    #
-    @torch.no_grad()
-    def evaluate(
-            self,
-            data_loader,
-            category: str = None,
-    ) -> float:
-        self.eval()
-        self.metric.reset()
-
-        for batch in data_loader:
-            _ = self.accuracy(batch, reset=False)
 
         return self.metric.f_score(class_name=category)
 
