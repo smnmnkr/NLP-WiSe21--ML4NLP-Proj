@@ -13,3 +13,63 @@ AVG              tp:  4574       fp:  1757       tn:  4571       fn:  1757      
 Neutral          tp:  2137       fp:   828       tn:  2134       fn:   929       prec=0.721      rec=0.697       f1=0.709        acc=0.709
 Colored          tp:  2437       fp:   929       tn:  2437       fn:   828       prec=0.724      rec=0.746       f1=0.735        acc=0.735
 
+[--- CONFIG ---]
+{
+  "data": {
+    "train_path": "data/train.csv",
+    "eval_path": "data/eval.csv",
+    "test_path": null
+  },
+  "preprocess": [
+    "hyperlinks",
+    "mentions",
+    "hashtags",
+    "retweet",
+    "repetitions",
+    "emojis",
+    "smileys",
+    "spaces",
+    "punctuation",
+    "tokenize"
+  ],
+  "embedding": {
+    "type": "fasttext",
+    "config": {
+      "data_path": "data/cc.en.300.bin",
+      "dimension": 300,
+      "dropout": 0.2
+    }
+  },
+  "model": {
+    "rnn": {
+      "hid_size": 64,
+      "depth": 3,
+      "dropout": 0.8
+    },
+    "score": {
+      "hid_size": 32,
+      "dropout": 0.8
+    }
+  },
+  "trainer": {
+    "epoch_num": 150,
+    "batch_size": 256,
+    "shuffle": true,
+    "optimizer": {
+      "lr": 2e-3,
+      "weight_decay": 1e-5,
+      "betas": [
+        0.9,
+        0.999
+      ],
+      "eps": 1e-8
+    },
+    "stopper": {
+      "delta": 1e-3,
+      "patience": 10
+    },
+    "report_rate": 5,
+    "log_dir": "results/_tmp/"
+  },
+  "seed": 42
+}
