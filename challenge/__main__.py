@@ -132,7 +132,10 @@ class Main:
         self.model.eval()
         self.model.metric.reset()
 
-        for batch in batch_loader(data_set):
+        for batch in batch_loader(
+                data_set,
+                batch_size=self.config["trainer"]["batch_size"],
+                shuffle=self.config["trainer"]["shuffle"]):
             _ = self.model.evaluate(batch, reset=False)
 
         self.model.metric.show(encoding)
