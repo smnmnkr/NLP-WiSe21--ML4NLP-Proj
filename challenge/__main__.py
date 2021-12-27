@@ -1,5 +1,6 @@
 import argparse
 import random
+from typing import Union
 
 import torch
 
@@ -28,32 +29,8 @@ class Main:
         self.eval = self.data.to_dict('eval')
         self.test = self.data.to_dict('test')
 
-        # prepare embedding
-        self.embedding = None
-
-        # load untrained embedding module
-        if self.config["embedding"]["type"] == "base":
-            self.embedding = Base(
-                data=list(set(flatten([row['text'] for row in self.train]))),
-                **self.config["embedding"]["config"])
-
-        # load fasttext module
-        elif self.config["embedding"]["type"] == "fasttext":
-            self.embedding = FastText(**self.config["embedding"]["config"])
-
-        # load bert module
-        elif self.config["embedding"]["type"] == "bert":
-            self.embedding = Bert(**self.config["embedding"]["config"])
-
-            self.embedding.tokenize(self.train)
-            self.embedding.tokenize(self.eval)
-            self.embedding.tokenize(self.test)
-
-        else:
-            exit(f"Config embedding value '{self.config['embedding']['type']}' "
-                 f"is not a valid option.\nPossible values are: ['base', 'fasttext', 'bert']")
-
-        # load model
+        # load embedding, model
+        self.embedding = self.load_embedding()
         self.model = Model(self.config['model'], self.embedding).to(get_device())
 
     #
@@ -115,6 +92,37 @@ class Main:
         )
         args = parser.parse_args()
         return load_json(args.config)
+
+    #
+    #
+    #  -------- load_embedding -----------
+    #
+    def load_embedding(self) -> Union[Base, FastText, Bert]:
+
+        # load untrained embedding module
+        if self.config["embedding"]["type"] == "base":
+            return Base(
+                data=list(set(flatten([row['text'] for row in self.train]))),
+                **self.config["embedding"]["config"])
+
+        # load fasttext module
+        elif self.config["embedding"]["type"] == "fasttext":
+            return FastText(**self.config["embedding"]["config"])
+
+        # load bert module
+        elif self.config["embedding"]["type"] == "bert":
+            embedding = Bert(**self.config["embedding"]["config"])
+
+            # use bert tokenizing
+            embedding.tokenize(self.train)
+            embedding.tokenize(self.eval)
+            embedding.tokenize(self.test)
+
+            return embedding
+
+        else:
+            exit(f"Config embedding value '{self.config['embedding']['type']}' "
+                 f"is not a valid option.\nPossible values are: ['base', 'fasttext', 'bert']")
 
     #
     #
