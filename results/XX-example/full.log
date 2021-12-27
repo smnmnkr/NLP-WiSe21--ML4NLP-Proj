@@ -1,0 +1,13 @@
+INING ---]
+[--- @005:      loss(train)=0.5928      loss(eval)=0.5858       f1(train)=0.7109        f1(eval)=0.7056         duration(epoch)=0:00:46.554428---]                                                        
+[--- @010:      loss(train)=0.5790      loss(eval)=0.5763       f1(train)=0.7271        f1(eval)=0.7191         duration(epoch)=0:00:38.744985---]                                                        
+[--- @015:      loss(train)=0.5731      loss(eval)=0.5760       f1(train)=0.7326        f1(eval)=0.7216         duration(epoch)=0:00:39.206612---]                                                        
+[--- @020:      loss(train)=0.5655      loss(eval)=0.5731       f1(train)=0.7458        f1(eval)=0.7203         duration(epoch)=0:00:38.520133---]                                                        
+[--- @025:      loss(train)=0.5577      loss(eval)=0.5762       f1(train)=0.7574        f1(eval)=0.7197         duration(epoch)=0:00:38.932196---]                                                        
+Early stopping interrupted training                                                                                                                                                                       
+[--- @019:      loss(train)=0.5665      loss(eval)=0.5712       f1(train)=0.7430        f1(eval)=0.7200         duration(epoch)=0:00:38.559439---]
+
+[--- METRIC ---]
+[--- AVG         tp:  4547       fp:  1784       tn:  4544       fn:  1784       prec=0.718      rec=0.718       f1=0.718        acc=0.718---]
+[--- Neutral     tp:  2147       fp:   865       tn:  2144       fn:   919       prec=0.713      rec=0.700       f1=0.706        acc=0.706---]
+[--- Colored     tp:  2400       fp:   919       tn:  2400       fn:   865       prec=0.723      rec=0.735       f1=0.729        acc=0.729---]
