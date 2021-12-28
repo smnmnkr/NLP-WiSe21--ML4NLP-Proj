@@ -62,6 +62,7 @@ class Trainer:
             "shuffle": True,
             "batch_size": 256,
             "report_rate": 1,
+            "max_grad_norm": 1.0,
             "optimizer": {
                 "lr": 1e-4,
                 "weight_decay": 1e-5,
@@ -159,6 +160,10 @@ class Trainer:
         # compute loss, backward
         loss = self.model.loss(batch)
         loss.backward()
+
+        # scaling the gradients down, places a limit on the size of the parameter updates
+        # https://pytorch.org/docs/stable/nn.html#clip-grad-norm
+        torch.nn.utils.clip_grad_norm_(self.model.parameters(), max_norm=self.config["max_grad_norm"])
 
         # optimizer step
         self.optimizer.step()

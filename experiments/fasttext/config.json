@@ -40,6 +40,7 @@
     "shuffle": true,
     "batch_size": 256,
     "report_rate": 5,
+    "max_grad_norm": 1.0,
     "optimizer": {
       "lr": 2e-3,
       "weight_decay": 1e-5,
