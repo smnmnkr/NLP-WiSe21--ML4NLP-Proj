@@ -43,30 +43,22 @@ class Main:
     #
     def __call__(self):
 
-        # try training; expect user interruption
-        try:
-            print("\n[--- TRAINING ---]")
-            results: dict = Trainer(
-                self.model,
-                self.train,
-                self.eval,
-                config=self.config['trainer']
-            )()
-        except KeyboardInterrupt:
-            print("Training interrupted by User, try to evaluate last model:")
+        print("\n[--- TRAINING ---]")
+        _: dict = Trainer(
+            self.model,
+            self.train,
+            self.eval,
+            config=self.config['trainer']
+        )()
 
-        try:
-            print("\n[--- METRIC ---]")
-            self.show_metric(
-                self.test,
-                {
-                    0: 'Neutral',
-                    1: 'Non-Neutral'
-                }
-            )
-
-        except KeyboardInterrupt:
-            print("Evaluation interrupted by User!")
+        print("\n[--- METRIC ---]")
+        self.show_metric(
+            self.test,
+            {
+                0: 'Neutral',
+                1: 'Non-Neutral'
+            }
+        )
 
     #
     #
@@ -133,16 +125,20 @@ class Main:
     #  -------- show_metric -----------
     #
     def show_metric(self, data_set, encoding: dict) -> None:
-        self.model.eval()
-        self.model.metric.reset()
+        try:
+            self.model.eval()
+            self.model.metric.reset()
 
-        for batch in batch_loader(
-                data_set,
-                batch_size=self.config["trainer"]["batch_size"],
-                shuffle=self.config["trainer"]["shuffle"]):
-            _ = self.model.evaluate(batch, reset=False)
+            for batch in batch_loader(
+                    data_set,
+                    batch_size=self.config["trainer"]["batch_size"],
+                    shuffle=self.config["trainer"]["shuffle"]):
+                _ = self.model.evaluate(batch, reset=False)
 
-        self.model.metric.show(encoding)
+            self.model.metric.show(encoding)
+
+        except KeyboardInterrupt:
+            print("Warning: Evaluation interrupted by User!")
 
 
 #

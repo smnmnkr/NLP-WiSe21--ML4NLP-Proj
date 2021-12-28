@@ -85,50 +85,54 @@ class Trainer:
         torch.set_grad_enabled(True)
 
         # --- epoch loop
-        for epoch in range(1, self.config["epoch_num"] + 1):
-            time_begin: datetime = datetime.now()
+        try:
+            for epoch in range(1, self.config["epoch_num"] + 1):
+                time_begin: datetime = datetime.now()
 
-            # --- ---------------------------------
-            # --- begin train
-            train_loss: float = 0.0
-            train_f1: float = 0.0
-            for idx, batch in self.load_iterator(self.data["train"], epoch=epoch, desc="Train"):
-                train_f1, train_loss = self.train(batch, idx, train_f1, train_loss)
+                # --- ---------------------------------
+                # --- begin train
+                train_loss: float = 0.0
+                train_f1: float = 0.0
+                for idx, batch in self.load_iterator(self.data["train"], epoch=epoch, desc="Train"):
+                    train_f1, train_loss = self.train(batch, idx, train_f1, train_loss)
 
-            # --- ---------------------------------
-            # --- begin evaluate
-            eval_loss: float = 0.0
-            eval_f1: float = 0.0
-            for idx, batch in self.load_iterator(self.data["eval"], epoch=epoch, desc="Eval"):
-                self.model.eval()
-                eval_loss += (self.model.loss(batch).item() - eval_loss) / (idx + 1)
-                eval_f1 += (self.model.evaluate(batch) - eval_f1) / (idx + 1)
+                # --- ---------------------------------
+                # --- begin evaluate
+                eval_loss: float = 0.0
+                eval_f1: float = 0.0
+                for idx, batch in self.load_iterator(self.data["eval"], epoch=epoch, desc="Eval"):
+                    self.model.eval()
+                    eval_loss += (self.model.loss(batch).item() - eval_loss) / (idx + 1)
+                    eval_f1 += (self.model.evaluate(batch) - eval_f1) / (idx + 1)
 
-            # --- ---------------------------------
-            # --- update state
-            self.state["epoch"].append(epoch)
-            self.state["train_loss"].append(train_loss)
-            self.state["train_f1"].append(train_f1)
-            self.state["eval_loss"].append(eval_loss)
-            self.state["eval_f1"].append(eval_f1)
-            self.state["duration"].append(datetime.now() - time_begin)
+                # --- ---------------------------------
+                # --- update state
+                self.state["epoch"].append(epoch)
+                self.state["train_loss"].append(train_loss)
+                self.state["train_f1"].append(train_f1)
+                self.state["eval_loss"].append(eval_loss)
+                self.state["eval_f1"].append(eval_f1)
+                self.state["duration"].append(datetime.now() - time_begin)
 
-            # --- ---------------------------------
-            # --- handle early stopping
-            self.stopper.step(self.state["eval_loss"][-1])
+                # --- ---------------------------------
+                # --- handle early stopping
+                self.stopper.step(self.state["eval_loss"][-1])
 
-            if self.stopper.should_save:
-                saved_model_epoch = self.state["epoch"][-1]
-                self.model.save(self.config["log_dir"] + "model")
+                if self.stopper.should_save:
+                    saved_model_epoch = self.state["epoch"][-1]
+                    self.model.save(self.config["log_dir"] + "model")
 
-            if self.stopper.should_stop:
-                print("Early stopping interrupted training.")
-                break
+                if self.stopper.should_stop:
+                    print("Early stopping interrupted training.")
+                    break
 
-            # --- ---------------------------------
-            # --- log to user
-            if epoch % self.config["report_rate"] == 0:
-                self.log(epoch)
+                # --- ---------------------------------
+                # --- log to user
+                if epoch % self.config["report_rate"] == 0:
+                    self.log(epoch)
+
+        except KeyboardInterrupt:
+            print("Warning: Training interrupted by User!")
 
         # load last save model
         print("Load best model based on evaluation loss.")
