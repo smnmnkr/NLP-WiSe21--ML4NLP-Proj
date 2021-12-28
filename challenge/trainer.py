@@ -43,8 +43,8 @@ class Trainer:
         self.config = config
 
         # choose Adam for optimization
-        # https://pytorch.org/docs/stable/generated/torch.optim.RAdam.html
-        self.optimizer = optim.RAdam(self.model.parameters(), **self.config["optimizer"])
+        # https://pytorch.org/docs/stable/generated/torch.optim.AdamW.html
+        self.optimizer = optim.AdamW(self.model.parameters(), **self.config["optimizer"])
         self.stopper = EarlyStopping(**self.config["stopper"])
 
     #
@@ -203,7 +203,7 @@ class Trainer:
     def write_log(self):
         cols: list = list(self.state.keys())
 
-        with open(self.config["log_dir"] + 'train_state.csv', 'w') as output_file:
+        with open(self.config["log_dir"] + 'train.csv', 'w') as output_file:
             writer = csv.writer(output_file, delimiter=",")
             writer.writerow(cols)
             writer.writerows(zip(*[self.state[c] for c in cols]))
