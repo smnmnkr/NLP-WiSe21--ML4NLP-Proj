@@ -49,6 +49,10 @@ class Trainer:
         # choose Adam for optimization
         # https://pytorch.org/docs/stable/generated/torch.optim.AdamW.html
         self.optimizer = optim.AdamW(self.model.parameters(), **self.config["optimizer"])
+        self.scheduler = torch.optim.lr_scheduler.LambdaLR(
+            self.optimizer,
+            lr_lambda=lambda e: 1 - self.config["scheduler_decay"] ** e
+        )
         self.stopper = EarlyStopping(**self.config["stopper"])
 
     #
@@ -63,6 +67,7 @@ class Trainer:
             "batch_size": 256,
             "report_rate": 1,
             "max_grad_norm": 1.0,
+            "scheduler_decay": 0.05,
             "optimizer": {
                 "lr": 1e-4,
                 "weight_decay": 1e-5,
@@ -119,7 +124,8 @@ class Trainer:
                 self.state["duration"].append(datetime.now() - time_begin)
 
                 # --- ---------------------------------
-                # --- handle early stopping
+                # --- handle scheduler & early stopping
+                self.scheduler.step()
                 self.stopper.step(self.state["eval_loss"][-1])
 
                 if self.stopper.should_save:
