@@ -12,3 +12,6 @@ Load best model based on evaluation loss.
 @006: 	loss(train)=0.5859 	loss(eval)=0.5841 	f1(train)=0.7649 	f1(eval)=0.7200 	duration(epoch)=0:08:02.668321
 
 [--- METRIC ---]
+AVG              tp:     4563    fp:     1768    tn:     4559    fn:     1768    prec=0.7207     rec=0.7207      f1=0.7207       acc=0.7207
+Neutral          tp:     2041    fp:      743    tn:     2041    fn:     1025    prec=0.7331     rec=0.6657      f1=0.6978       acc=0.6978
+Non-Neutral      tp:     2522    fp:     1025    tn:     2518    fn:      743    prec=0.7110     rec=0.7724      f1=0.7405       acc=0.7403
