@@ -7,7 +7,7 @@ import torch
 from challenge import Model, Trainer
 from challenge.data import Preprocessor, TwitterSentiment, batch_loader
 from challenge.embedding import Base, FastText, Bert
-from challenge.util import load_json, get_device, flatten
+from challenge.util import load_json, get_device, flatten, print_trainable_parameters
 
 
 class Main:
@@ -18,6 +18,7 @@ class Main:
     def __init__(self):
         self.description: str = "Twitter Sentiment Analysis"
         self.config: dict = self.load_config()
+        self.debug: bool = False
         self.setup_pytorch()
 
         # load data and preprocess
@@ -32,6 +33,10 @@ class Main:
         # load embedding, model
         self.embedding = self.load_embedding()
         self.model = Model(self.config['model'], self.embedding).to(get_device())
+
+        # print model parameter information is debug mode
+        if self.debug:
+            print_trainable_parameters(self.model)
 
     #
     #
