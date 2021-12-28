@@ -55,5 +55,6 @@
     "report_rate": 5,
     "log_dir": "results/_tmp/"
   },
-  "seed": 42
+  "seed": 42,
+  "debug": false
 }

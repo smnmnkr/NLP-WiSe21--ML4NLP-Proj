@@ -18,7 +18,6 @@ class Main:
     def __init__(self):
         self.description: str = "Twitter Sentiment Analysis"
         self.config: dict = self.load_config()
-        self.debug: bool = False
         self.setup_pytorch()
 
         # load data and preprocess
@@ -35,7 +34,7 @@ class Main:
         self.model = Model(self.config['model'], self.embedding).to(get_device())
 
         # print model parameter information is debug mode
-        if self.debug:
+        if self.config['debug']:
             print_trainable_parameters(self.model)
 
     #

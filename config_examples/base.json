@@ -44,5 +44,7 @@
   },
   "logging": {
     "path": "results/XX-untrained/"
-  }
+  },
+  "seed": 42,
+  "debug": false
 }

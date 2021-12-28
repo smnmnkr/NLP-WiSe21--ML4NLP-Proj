@@ -55,5 +55,6 @@
     "report_rate": 5,
     "log_dir": "experiments/fasttext/"
   },
-  "seed": 42
+  "seed": 42,
+  "debug": false
 }
