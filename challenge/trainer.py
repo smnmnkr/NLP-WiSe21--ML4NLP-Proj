@@ -18,9 +18,11 @@ class Trainer:
     #
     def __init__(
             self,
-            model,
+            model: torch.nn.Module,
             train_set,
             eval_set,
+            logger,
+            out_dir: str,
             config: dict = None):
         self.state: dict = {
             'epoch': [],
@@ -36,6 +38,8 @@ class Trainer:
             "train": train_set,
             "eval": eval_set,
         }
+        self.logger = logger
+        self.out_dir = out_dir
 
         if config is None:
             config = self._default_config()
@@ -55,8 +59,9 @@ class Trainer:
     def _default_config() -> dict:
         return {
             "epoch_num": 100,
-            "batch_size": 256,
             "shuffle": True,
+            "batch_size": 256,
+            "report_rate": 1,
             "optimizer": {
                 "lr": 1e-4,
                 "weight_decay": 1e-5,
@@ -70,8 +75,6 @@ class Trainer:
                 "delta": 1e-3,
                 "patience": 10
             },
-            "report_rate": 1,
-            "log_dir": "./"
         }
 
     #
@@ -120,10 +123,10 @@ class Trainer:
 
                 if self.stopper.should_save:
                     saved_model_epoch = self.state["epoch"][-1]
-                    self.model.save(self.config["log_dir"] + "model")
+                    self.model.save(self.out_dir + "model")
 
                 if self.stopper.should_stop:
-                    print("Early stopping interrupted training.")
+                    self.logger.info("Early stopping interrupted training.")
                     break
 
                 # --- ---------------------------------
@@ -132,15 +135,15 @@ class Trainer:
                     self.log(epoch)
 
         except KeyboardInterrupt:
-            print("Warning: Training interrupted by User!")
+            self.logger.warning("Warning: Training interrupted by User!")
 
         # load last save model
-        print("Load best model based on evaluation loss.")
-        self.model = self.model.load(self.config["log_dir"] + "model", self.model.embedding)
+        self.logger.info("Load best model based on evaluation loss.")
+        self.model = self.model.load(self.out_dir + "model", self.model.embedding)
         self.log(saved_model_epoch)
 
         # return and write train state to main
-        self.write_log()
+        self.write_state()
         return self.state
 
     #
@@ -191,7 +194,7 @@ class Trainer:
     #  -------- log -----------
     #
     def log(self, epoch: int):
-        print((
+        self.logger.info((
             f"@{epoch:03}: \t"
             f"loss(train)={self.state['train_loss'][epoch - 1]:2.4f} \t"
             f"loss(eval)={self.state['eval_loss'][epoch - 1]:2.4f} \t"
@@ -202,12 +205,12 @@ class Trainer:
 
     #
     #
-    #  -------- write_log -----------
+    #  -------- write_state -----------
     #
-    def write_log(self):
+    def write_state(self):
         cols: list = list(self.state.keys())
 
-        with open(self.config["log_dir"] + 'train.csv', 'w') as output_file:
+        with open(self.out_dir + 'train.csv', 'w') as output_file:
             writer = csv.writer(output_file, delimiter=",")
             writer.writerow(cols)
             writer.writerows(zip(*[self.state[c] for c in cols]))

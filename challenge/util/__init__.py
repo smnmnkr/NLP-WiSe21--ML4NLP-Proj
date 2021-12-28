@@ -10,8 +10,7 @@ from .functional import (
     inverse_logistic,
     dict_max,
     dict_min,
-    smooth_gradient,
-    print_trainable_parameters
+    smooth_gradient
 )
 
 from .metric import Metric

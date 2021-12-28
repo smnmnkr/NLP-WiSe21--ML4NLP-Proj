@@ -1,4 +1,5 @@
 import argparse
+import logging
 import random
 from typing import Union
 
@@ -7,7 +8,7 @@ import torch
 from challenge import Model, Trainer
 from challenge.data import Preprocessor, TwitterSentiment, batch_loader
 from challenge.embedding import Base, FastText, Bert
-from challenge.util import load_json, get_device, flatten, print_trainable_parameters
+from challenge.util import load_json, get_device, flatten
 
 
 class Main:
@@ -18,6 +19,7 @@ class Main:
     def __init__(self):
         self.description: str = "Twitter Sentiment Analysis"
         self.config: dict = self.load_config()
+        self.logger: logging = self.setup_logging()
         self.setup_pytorch()
 
         # load data and preprocess
@@ -33,9 +35,8 @@ class Main:
         self.embedding = self.load_embedding()
         self.model = Model(self.config['model'], self.embedding).to(get_device())
 
-        # print model parameter information is debug mode
-        if self.config['debug']:
-            print_trainable_parameters(self.model)
+        # log model parameter information
+        self.log_trainable_parameters()
 
     #
     #
@@ -43,15 +44,18 @@ class Main:
     #
     def __call__(self):
 
-        print("\n[--- TRAINING ---]")
+        self.logger.info("\n[--- TRAINING ---]")
         _: dict = Trainer(
             self.model,
             self.train,
             self.eval,
-            config=self.config['trainer']
+            logger=self.logger,
+            out_dir=self.config['log_dir'],
+            config=self.config['trainer'],
+
         )()
 
-        print("\n[--- METRIC ---]")
+        self.logger.info("\n[--- METRIC ---]")
         self.show_metric(
             self.test,
             {
@@ -71,6 +75,24 @@ class Main:
         torch.manual_seed(self.config['seed'])
         torch.backends.cudnn.deterministic = True
         torch.backends.cudnn.benchmark = False
+
+    #
+    #
+    #  -------- setup_logging -----------
+    #
+    def setup_logging(self):
+        filename: str = self.config['log_dir'] + "full.log"
+
+        logging.basicConfig(
+            level=logging.INFO if not self.config["debug"] else logging.DEBUG,
+            format="%(message)s",
+            handlers=[
+                logging.FileHandler(filename),
+                logging.StreamHandler()
+            ]
+        )
+
+        return logging.getLogger(__name__)
 
     #
     #
@@ -117,8 +139,8 @@ class Main:
             return embedding
 
         else:
-            exit(f"Config embedding value '{self.config['embedding']['type']}' "
-                 f"is not a valid option.\nPossible values are: ['base', 'fasttext', 'bert']")
+            self.logger.error((f"Config embedding value '{self.config['embedding']['type']}' "
+                               f"is not a valid option.\nPossible values are: ['base', 'fasttext', 'bert']"))
 
     #
     #
@@ -138,7 +160,20 @@ class Main:
             self.model.metric.show(encoding)
 
         except KeyboardInterrupt:
-            print("Warning: Evaluation interrupted by User!")
+            self.logger.warning("Warning: Evaluation interrupted by User!")
+
+    #
+    #
+    #  -------- log_trainable_parameters -----------
+    #
+    def log_trainable_parameters(self) -> None:
+        param_count: int = sum(p.numel() for p in self.model.parameters() if p.requires_grad)
+
+        for name, param in self.model.named_parameters():
+            if param.requires_grad:
+                self.logger.debug(name)
+
+        self.logger.debug(f'The model has {param_count:,} trainable parameters')
 
 
 #

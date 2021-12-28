@@ -37,8 +37,9 @@
   },
   "trainer": {
     "epoch_num": 150,
-    "batch_size": 256,
     "shuffle": true,
+    "batch_size": 256,
+    "report_rate": 5,
     "optimizer": {
       "lr": 2e-3,
       "weight_decay": 1e-5,
@@ -51,10 +52,9 @@
     "stopper": {
       "delta": 1e-3,
       "patience": 10
-    },
-    "report_rate": 5,
-    "log_dir": "experiments/fasttext/"
+    }
   },
   "seed": 42,
-  "debug": false
+  "debug": false,
+  "log_dir": "experiments/_tmp/"
 }
