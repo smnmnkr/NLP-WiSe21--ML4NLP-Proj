@@ -41,7 +41,7 @@ make baseline
     "per_device_train_batch_size": 16,
     "per_device_eval_batch_size": 16,
     "weight_decay": 0.01,
-    "output_dir": "results/",
+    "output_dir": "experiments/",
     "logging_dir": "logs/"
   }
 }
