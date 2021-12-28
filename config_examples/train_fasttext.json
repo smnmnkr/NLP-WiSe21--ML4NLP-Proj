@@ -26,12 +26,12 @@
   },
   "model": {
     "rnn": {
-      "hid_size": 256,
-      "depth": 3,
+      "hid_size": 1024,
+      "depth": 5,
       "dropout": 0.8
     },
     "score": {
-      "hid_size": 128,
+      "hid_size": 512,
       "dropout": 0.8
     }
   },
