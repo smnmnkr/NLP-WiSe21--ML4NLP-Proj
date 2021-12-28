@@ -15,11 +15,9 @@
     "spaces"
   ],
   "model": {
-    "name": "distilbert-base-cased",
+    "name": "vinai/bertweet-base",
     "config": {
-      "dropout": 0.2,
-      "attention_dropout": 0.2,
-      "seq_classif_dropout": 0.2
+
     }
   },
   "trainer": {
