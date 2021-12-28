@@ -2,16 +2,16 @@ module := challenge
 
 #
 # Run config examples:
-config_path := config_examples
+examples_path := config_examples
 
 example_base:
-	@python3 -m ${module} -C ${config_path}/train_base.json
+	@python3 -m ${module} -C ${examples_path}/base.json
 
 example_fasttext:
-	@python3 -m ${module} -C ${config_path}/train_fasttext.json
+	@python3 -m ${module} -C ${examples_path}/fasttext.json
 
 example_bert:
-	@python3 -m ${module} -C ${config_path}/train_bert.json
+	@python3 -m ${module} -C ${examples_path}/bert.json
 
 # --- --- --- --- ---
 
