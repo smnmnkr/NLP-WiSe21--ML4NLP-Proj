@@ -130,3 +130,13 @@ def smooth_gradient(tensor: torch.Tensor, clip: float = 60.0):
     torch.clamp(tensor, min=-clip, max=clip)
 
     return tensor
+
+
+#
+#
+#  -------- print_trainable_parameters -----------
+#
+def print_trainable_parameters(model: torch.nn.Module) -> None:
+    for name, param in model.named_parameters():
+        if param.requires_grad:
+            print(name)

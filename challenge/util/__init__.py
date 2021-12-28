@@ -11,6 +11,7 @@ from .functional import (
     dict_max,
     dict_min,
     smooth_gradient,
+    print_trainable_parameters
 )
 
 from .metric import Metric
