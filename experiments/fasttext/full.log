@@ -1,40 +1,20 @@
 [--- TRAINING ---]
-@005:   loss(train)=0.5894      loss(eval)=0.5792       f1(train)=0.7156        f1(eval)=0.7159         duration(epoch)=0:00:40.442070
-@010:   loss(train)=0.5818      loss(eval)=0.5785       f1(train)=0.7262        f1(eval)=0.7177         duration(epoch)=0:00:39.870598
-@015:   loss(train)=0.5694      loss(eval)=0.5803       f1(train)=0.7402        f1(eval)=0.7190         duration(epoch)=0:00:40.099127
-@020:   loss(train)=0.5639      loss(eval)=0.5815       f1(train)=0.7511        f1(eval)=0.7178         duration(epoch)=0:00:40.189899
-@025:   loss(train)=0.5592      loss(eval)=0.5783       f1(train)=0.7564        f1(eval)=0.7206         duration(epoch)=0:00:39.628221
+@010:   loss(train)=0.5784      loss(eval)=0.5795       f1(train)=0.7310        f1(eval)=0.7150         duration(epoch)=0:00:41.129510
+@011:   loss(train)=0.5750      loss(eval)=0.5766       f1(train)=0.7318        f1(eval)=0.7165         duration(epoch)=0:00:41.234590
+@012:   loss(train)=0.5725      loss(eval)=0.5761       f1(train)=0.7342        f1(eval)=0.7214         duration(epoch)=0:00:40.735478
+@013:   loss(train)=0.5744      loss(eval)=0.5796       f1(train)=0.7342        f1(eval)=0.7069         duration(epoch)=0:00:40.256282
+@014:   loss(train)=0.5736      loss(eval)=0.5775       f1(train)=0.7356        f1(eval)=0.7191         duration(epoch)=0:00:40.128777
+@015:   loss(train)=0.5697      loss(eval)=0.5844       f1(train)=0.7375        f1(eval)=0.7188         duration(epoch)=0:00:40.093060
+@016:   loss(train)=0.5725      loss(eval)=0.5779       f1(train)=0.7417        f1(eval)=0.7192         duration(epoch)=0:00:39.911272
+@017:   loss(train)=0.5682      loss(eval)=0.5787       f1(train)=0.7441        f1(eval)=0.7257         duration(epoch)=0:00:39.730666
+@018:   loss(train)=0.5650      loss(eval)=0.5758       f1(train)=0.7483        f1(eval)=0.7267         duration(epoch)=0:00:39.774196
+@019:   loss(train)=0.5638      loss(eval)=0.5787       f1(train)=0.7493        f1(eval)=0.7098         duration(epoch)=0:00:39.561633
+@020:   loss(train)=0.5638      loss(eval)=0.5815       f1(train)=0.7498        f1(eval)=0.7008         duration(epoch)=0:00:39.864003
 Early stopping interrupted training.
 Load best model based on evaluation loss.
-@016:   loss(train)=0.5698      loss(eval)=0.5726       f1(train)=0.7406        f1(eval)=0.7202         duration(epoch)=0:00:40.176150
+@007:   loss(train)=0.5861      loss(eval)=0.5757       f1(train)=0.7224        f1(eval)=0.7171         duration(epoch)=0:00:40.263563
 
 [--- METRIC ---]
-AVG              tp:     4540    fp:     1791    tn:     4537    fn:     1791    prec=0.7171     rec=0.7171      f1=0.7171       acc=0.7170
-Neutral          tp:     2053    fp:      778    tn:     2050    fn:     1013    prec=0.7252     rec=0.6696      f1=0.6963       acc=0.6961
-Non-Neutral      tp:     2487    fp:     1013    tn:     2487    fn:      778    prec=0.7106     rec=0.7617      f1=0.7353       acc=0.7353
-[--- TRAINING ---]
-@001: 	loss(train)=0.6942 	loss(eval)=0.6938 	f1(train)=0.4711 	f1(eval)=0.4838 	duration(epoch)=0:00:40.407930
-@002: 	loss(train)=0.6518 	loss(eval)=0.6211 	f1(train)=0.6361 	f1(eval)=0.6715 	duration(epoch)=0:00:40.500214
-@003: 	loss(train)=0.6083 	loss(eval)=0.5850 	f1(train)=0.6978 	f1(eval)=0.7104 	duration(epoch)=0:00:40.573005
-@004: 	loss(train)=0.5954 	loss(eval)=0.5805 	f1(train)=0.7118 	f1(eval)=0.7136 	duration(epoch)=0:00:40.413732
-@005: 	loss(train)=0.5908 	loss(eval)=0.5934 	f1(train)=0.7179 	f1(eval)=0.7064 	duration(epoch)=0:00:40.280402
-@006: 	loss(train)=0.5919 	loss(eval)=0.5786 	f1(train)=0.7170 	f1(eval)=0.7140 	duration(epoch)=0:00:40.129638
-@007: 	loss(train)=0.5861 	loss(eval)=0.5757 	f1(train)=0.7224 	f1(eval)=0.7171 	duration(epoch)=0:00:40.263563
-@008: 	loss(train)=0.5825 	loss(eval)=0.5797 	f1(train)=0.7257 	f1(eval)=0.7185 	duration(epoch)=0:00:39.963597
-@009: 	loss(train)=0.5819 	loss(eval)=0.5760 	f1(train)=0.7251 	f1(eval)=0.7168 	duration(epoch)=0:00:40.966158
-@010: 	loss(train)=0.5784 	loss(eval)=0.5795 	f1(train)=0.7310 	f1(eval)=0.7150 	duration(epoch)=0:00:41.129510
-@011: 	loss(train)=0.5750 	loss(eval)=0.5766 	f1(train)=0.7318 	f1(eval)=0.7165 	duration(epoch)=0:00:41.234590
-@012: 	loss(train)=0.5725 	loss(eval)=0.5761 	f1(train)=0.7342 	f1(eval)=0.7214 	duration(epoch)=0:00:40.735478
-@013: 	loss(train)=0.5744 	loss(eval)=0.5796 	f1(train)=0.7342 	f1(eval)=0.7069 	duration(epoch)=0:00:40.256282
-@014: 	loss(train)=0.5736 	loss(eval)=0.5775 	f1(train)=0.7356 	f1(eval)=0.7191 	duration(epoch)=0:00:40.128777
-@015: 	loss(train)=0.5697 	loss(eval)=0.5844 	f1(train)=0.7375 	f1(eval)=0.7188 	duration(epoch)=0:00:40.093060
-@016: 	loss(train)=0.5725 	loss(eval)=0.5779 	f1(train)=0.7417 	f1(eval)=0.7192 	duration(epoch)=0:00:39.911272
-@017: 	loss(train)=0.5682 	loss(eval)=0.5787 	f1(train)=0.7441 	f1(eval)=0.7257 	duration(epoch)=0:00:39.730666
-@018: 	loss(train)=0.5650 	loss(eval)=0.5758 	f1(train)=0.7483 	f1(eval)=0.7267 	duration(epoch)=0:00:39.774196
-@019: 	loss(train)=0.5638 	loss(eval)=0.5787 	f1(train)=0.7493 	f1(eval)=0.7098 	duration(epoch)=0:00:39.561633
-@020: 	loss(train)=0.5638 	loss(eval)=0.5815 	f1(train)=0.7498 	f1(eval)=0.7008 	duration(epoch)=0:00:39.864003
-Early stopping interrupted training.
-Load best model based on evaluation loss.
-@007: 	loss(train)=0.5861 	loss(eval)=0.5757 	f1(train)=0.7224 	f1(eval)=0.7171 	duration(epoch)=0:00:40.263563
-
-[--- METRIC ---]
+AVG              tp:     4603    fp:     1728    tn:     4600    fn:     1728    prec=0.7271     rec=0.7271      f1=0.7271       acc=0.7270
+Neutral          tp:     2003    fp:      665    tn:     2000    fn:     1063    prec=0.7507     rec=0.6533      f1=0.6986       acc=0.6985
+Non-Neutral      tp:     2600    fp:     1063    tn:     2600    fn:      665    prec=0.7098     rec=0.7963      f1=0.7506       acc=0.7506
