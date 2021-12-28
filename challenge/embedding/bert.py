@@ -1,10 +1,11 @@
 import torch
+import torch.nn as nn
 from transformers import DistilBertModel, DistilBertTokenizer, logging
 
 from challenge.util import get_device
 
 
-class Bert:
+class Bert(nn.Module):
     """Module for DistillBERT Transformer word embedding."""
 
     #
@@ -12,6 +13,7 @@ class Bert:
     #  -------- __init__ -----------
     #
     def __init__(self, model_name: str = "distilbert-base-uncased", dropout: float = 0.0):
+        super().__init__()
         logging.set_verbosity_error()
 
         self.model_name = model_name
@@ -23,15 +25,15 @@ class Bert:
     #
     #  -------- forward_sent -----------
     #
-    @torch.no_grad()
+    # @torch.no_grad()
     def forward_row(self, row: dict) -> torch.Tensor:
-        return self.model(**row)[0].squeeze()
+        return self.model(**row).last_hidden_state.squeeze()
 
     #
     #
     #  -------- forward_batch -----------
     #
-    @torch.no_grad()
+    # @torch.no_grad()
     def forward_batch(self, batch: list) -> list:
         return [self.forward_row(sent) for sent in batch]
 
