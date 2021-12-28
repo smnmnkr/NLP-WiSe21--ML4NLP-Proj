@@ -53,7 +53,7 @@
       "patience": 20
     },
     "report_rate": 5,
-    "log_dir": "results/_tmp/"
+    "log_dir": "experiments/_tmp/"
   },
   "seed": 42,
   "debug": false

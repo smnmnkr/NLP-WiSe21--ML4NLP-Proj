@@ -43,7 +43,7 @@
     "batch_size": 256
   },
   "logging": {
-    "path": "results/XX-untrained/"
+    "path": "experiments/_tmp/"
   },
   "seed": 42,
   "debug": false
