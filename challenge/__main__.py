@@ -57,7 +57,7 @@ class Main:
                 self.test,
                 {
                     0: 'Neutral',
-                    1: 'Colored'
+                    1: 'Non-Neutral'
                 }
             )
 
