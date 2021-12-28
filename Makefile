@@ -20,6 +20,9 @@ example_bert:
 experiment_fasttext:
 	@python3 -m ${module} -C experiments/fasttext/config.json
 
+experiment_bert:
+	@python3 -m ${module} -C experiments/bert/config.json
+
 # --- --- --- --- ---
 
 #

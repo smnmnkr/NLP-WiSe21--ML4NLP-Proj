@@ -1,0 +1,60 @@
+{
+  "data": {
+    "train_path": "data/train.csv",
+    "eval_path": "data/eval.csv",
+    "test_path": null
+  },
+  "preprocess": [
+    "hyperlinks",
+    "mentions",
+    "hashtags",
+    "retweet",
+    "repetitions",
+    "emojis",
+    "smileys",
+    "spaces",
+    "punctuation"
+  ],
+  "embedding": {
+    "type": "bert",
+    "config": {
+      "model_name": "distilbert-base-cased",
+      "dropout": 0.2
+    }
+  },
+  "model": {
+    "rnn": {
+      "hid_size": 64,
+      "depth": 3,
+      "dropout": 0.8
+    },
+    "score": {
+      "hid_size": 32,
+      "dropout": 0.8
+    }
+  },
+  "trainer": {
+    "epoch_num": 20,
+    "shuffle": true,
+    "batch_size": 256,
+    "report_rate": 1,
+    "max_grad_norm": 1.0,
+    "scheduler_decay": 0.2,
+    "optimizer": {
+      "lr": 5e-5,
+      "weight_decay": 0.0,
+      "betas": [
+        0.9,
+        0.999
+      ],
+      "eps": 1e-8
+    },
+    "stopper": {
+      "delta": 1e-3,
+      "patience": 2
+    }
+  },
+  "seed": 42,
+  "debug": false,
+  "log_dir": "experiments/bert/"
+}
