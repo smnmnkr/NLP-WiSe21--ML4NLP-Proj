@@ -19,22 +19,22 @@
     "type": "bert",
     "config": {
       "model_name": "distilbert-base-cased",
-      "dropout": 0.3
+      "dropout": 0.2
     }
   },
   "model": {
     "rnn": {
-      "hid_size": 256,
-      "depth": 3,
-      "dropout": 0.8
+      "hid_size": 64,
+      "depth": 2,
+      "dropout": 0.2
     },
     "score": {
-      "hid_size": 128,
-      "dropout": 0.8
+      "hid_size": 32,
+      "dropout": 0.2
     }
   },
   "trainer": {
-    "epoch_num": 20,
+    "epoch_num": 5,
     "shuffle": true,
     "batch_size": 256,
     "report_rate": 1,
