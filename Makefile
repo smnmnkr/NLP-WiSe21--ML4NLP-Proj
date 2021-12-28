@@ -1,15 +1,29 @@
 module := challenge
+
+#
+# Run config examples:
 config_path := config_examples
 
-train_base:
+example_base:
 	@python3 -m ${module} -C ${config_path}/train_base.json
 
-train_fasttext:
+example_fasttext:
 	@python3 -m ${module} -C ${config_path}/train_fasttext.json
 
-train_bert:
+example_bert:
 	@python3 -m ${module} -C ${config_path}/train_bert.json
 
+# --- --- --- --- ---
+
+#
+# Run experiments:
+experiment_fasttext:
+	@python3 -m ${module} -C experiments/fasttext/config.json
+
+# --- --- --- --- ---
+
+#
+# Run miscellaneous:
 baseline:
 	@python3 ./scripts/baseline.py
 
