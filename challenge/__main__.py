@@ -8,9 +8,9 @@ from transformers import AutoTokenizer
 from transformers import DataCollatorWithPadding
 from transformers import TrainingArguments, Trainer
 
-from lib.data import Data
-from lib.preprocessor import Preprocessor
-from lib.utils import load_json
+from .data import Data
+from .preprocessor import Preprocessor
+from .utils import load_json
 
 
 class Main:
