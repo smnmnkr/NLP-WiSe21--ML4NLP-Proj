@@ -3,7 +3,7 @@ from typing import List, Dict
 import pandas as pd
 
 
-class Data:
+class TwitterSentiment:
     """
     Container for Twitter Sentiment data
     """
@@ -45,8 +45,9 @@ class Data:
         :return: None
         """
         for _, data in self.prepared.items():
-            data.drop(['id', 'time', 'lang', 'smth'], axis=1, inplace=True)
+            data.drop(['id', 'time', 'lang', 'smth'], axis=1, inplace=True, errors='ignore')
             data.rename(columns={'tweet': 'text', 'sent': 'label'}, inplace=True)
+            data.drop_duplicates(inplace=True)
 
             data['label'] = data['label'].apply(self._convert_label)
 
@@ -66,9 +67,9 @@ class Data:
 
     #
     #
-    #  -------- apply_preprocessor -----------
+    #  -------- apply_to_text -----------
     #
-    def apply_preprocessor(self, preprocessor) -> None:
+    def apply_to_text(self, preprocessor: object) -> None:
         """
         Apply custom preprocessor pipeline to data
 
@@ -91,5 +92,9 @@ class Data:
         """
         return self.prepared[split].to_dict('records')
 
+    #
+    #
+    #  -------- compute_metrics -----------
+    #
     def max_text_length(self) -> int:
         return max([data['text'].str.len().max() for _, data in self.prepared.items()])
