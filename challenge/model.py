@@ -77,7 +77,7 @@ class Model(nn.Module):
         # Calculate the score using last hidden context state:
         score = self.score(torch.cat((hidden[-2, :, :], hidden[-1, :, :]), dim=1))
 
-        return torch.split(self.acf_out(score), 1)
+        return self.acf_out(score)
 
     #
     #
@@ -103,7 +103,7 @@ class Model(nn.Module):
 
             label_batch.append([row['label']])
 
-        return self.forward(word_batch), label_batch
+        return self.forward(word_batch), torch.LongTensor(flatten(label_batch)).to(get_device())
 
     #
     #
@@ -113,13 +113,7 @@ class Model(nn.Module):
             self,
             batch: list,
     ) -> nn.CrossEntropyLoss:
-
-        predictions, target_ids = self.predict(batch)
-
-        return nn.CrossEntropyLoss()(
-            torch.cat(predictions),
-            torch.LongTensor(flatten(target_ids)).to(get_device()),
-        )
+        return nn.CrossEntropyLoss()(*self.predict(batch))
 
     #
     #
@@ -140,22 +134,24 @@ class Model(nn.Module):
         predictions, target_ids = self.predict(batch)
 
         # Process the predictions and compare with the gold labels
-        for pred, gold in zip(predictions, target_ids):
-            for (p, g) in zip(pred, gold):
+        for pred, gold in zip(torch.argmax(predictions, dim=1), target_ids):
 
-                p_idx: int = torch.argmax(p).item()
+            pred = pred.item()
+            gold = gold.item()
 
-                if p_idx == g:
-                    self.metric.add_tp(p_idx)
+            if pred == gold:
+                self.metric.add_tp(pred)
 
-                    for c in self.metric.get_classes():
-                        if c != p_idx:
-                            self.metric.add_tn(p_idx)
+                for c in self.metric.get_classes():
+                    if c != pred:
+                        self.metric.add_tn(pred)
 
-                if p_idx != g:
-                    self.metric.add_fp(p_idx)
-                    self.metric.add_fn(g)
+            if pred != gold:
+                self.metric.add_fp(pred)
+                self.metric.add_fn(gold)
 
+        self.metric.show()
+        exit()
         return self.metric.f_score(class_name=category)
 
     #  -------- save -----------
