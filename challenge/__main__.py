@@ -58,7 +58,7 @@ class Main:
         self.logger.info("\n[--- TRAINING ---]")
         self.trainer()
 
-        self.logger.info("\n[--- METRIC ---]")
+        self.logger.info("\n[--- METRIC (data: test) ---]")
         self.trainer.show_metric(
             self.test,
             {
