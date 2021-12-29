@@ -166,7 +166,8 @@ class Trainer:
                     data_set,
                     batch_size=self.config["batch_size"],
                     shuffle=self.config["shuffle"]):
-                _ = self.model.evaluate(batch, reset=False)
+                predictions, target_ids = self.model.predict(batch)
+                _ = self._evaluate(predictions, target_ids, reset=False)
 
             self.metric.show(encoding)
 
