@@ -1,4 +1,4 @@
-module := lib
+module := challenge
 config := config.json
 
 run:
