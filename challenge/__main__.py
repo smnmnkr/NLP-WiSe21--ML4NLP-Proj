@@ -34,7 +34,7 @@ class Main:
         self.preprocessor = Preprocessor()
         self.data = TwitterSentiment(**self.config['data'])
         self.max_length_sent = self.data.max_text_length()
-        self.data.apply_preprocessor(self.preprocessor)
+        self.data.apply_to_text(self.preprocessor)
 
         self.train = self.data.to_dict('train')
         self.eval = self.data.to_dict('eval')
