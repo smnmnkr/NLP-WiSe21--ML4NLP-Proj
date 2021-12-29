@@ -9,11 +9,12 @@ class Metric:
     #
     #  -------- __init__ -----------
     #
-    def __init__(self) -> None:
+    def __init__(self, logger) -> None:
         """
         src: (flairNLP) https://github.com/flairNLP/flair/blob/master/flair/training_utils.py
         """
         self.beta: float = 1.0
+        self.logger = logger
 
         self._tps = None
         self._fps = None
@@ -114,28 +115,20 @@ class Metric:
             self,
             encoding=None,
     ):
-        def encode(n: Union[None, int]) -> Union[str, int]:
-            if encoding:
-                return encoding[n]
+        def enc(n): return encoding[n] if encoding else n
 
-            else:
-                return n
-
-        all_classes = self.get_classes()
-        all_classes = [None] + all_classes
-        all_lines = [
-            (f"{'AVG' if class_name is None else encode(class_name):14}"
-             f"\t tp: {self.get_tp(class_name):8}"
-             f"\t fp: {self.get_fp(class_name):8} "
-             f"\t tn: {self.get_tn(class_name):8}"
-             f"\t fn: {self.get_fn(class_name):8}"
-             f"\t prec={self.precision(class_name):2.4f}"
-             f"\t rec={self.recall(class_name):2.4f}"
-             f"\t f1={self.f_score(class_name):2.4f}"
-             f"\t acc={self.accuracy(class_name):2.4f}")
-            for class_name in all_classes
-        ]
-        print("\n".join(all_lines))
+        for class_name in [None] + self.get_classes():
+            self.logger.info((
+                (f"{'AVG' if class_name is None else enc(class_name):14}"
+                 f"\t tp: {self.get_tp(class_name):8}"
+                 f"\t fp: {self.get_fp(class_name):8} "
+                 f"\t tn: {self.get_tn(class_name):8}"
+                 f"\t fn: {self.get_fn(class_name):8}"
+                 f"\t prec={self.precision(class_name):2.4f}"
+                 f"\t rec={self.recall(class_name):2.4f}"
+                 f"\t f1={self.f_score(class_name):2.4f}"
+                 f"\t acc={self.accuracy(class_name):2.4f}")
+            ))
 
     #  -------- reset -----------
     #
