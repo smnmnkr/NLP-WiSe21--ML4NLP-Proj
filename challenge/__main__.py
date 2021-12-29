@@ -91,12 +91,8 @@ class Main:
     def tokenize(self, data: list):
         for row in data:
             row.update(
-                self.tokenizer(row['text'],
-                               truncation=True,
-                               padding='max_length',
-                               max_length=500))
+                self.tokenizer(row['text'], truncation=True))
             del row['text']
-
 
     #
     #
