@@ -8,8 +8,7 @@ from transformers import AutoTokenizer
 from transformers import DataCollatorWithPadding
 from transformers import TrainingArguments, Trainer
 
-from .data import Data
-from .preprocessor import Preprocessor
+from .data import Preprocessor, TwitterSentiment
 from .utils import load_json
 
 
@@ -33,7 +32,7 @@ class Main:
 
         # load preprocessor and data
         self.preprocessor = Preprocessor()
-        self.data = Data(**self.config['data'])
+        self.data = TwitterSentiment(**self.config['data'])
         self.max_length_sent = self.data.max_text_length()
         self.data.apply_preprocessor(self.preprocessor)
 
