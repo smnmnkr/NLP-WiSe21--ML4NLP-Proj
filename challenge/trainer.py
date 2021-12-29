@@ -49,7 +49,7 @@ class Trainer:
         self.config = config
 
         # setup loss_fn, optimizer, scheduler and early stopping
-        self.loss_fn = torch.nn.CrossEntropyLoss()
+        self.loss_fn = torch.nn.CrossEntropyLoss
         self.optimizer = optim.AdamW(self.model.parameters(), **self.config["optimizer"])
         self.scheduler = torch.optim.lr_scheduler.LambdaLR(
             self.optimizer,
@@ -188,7 +188,7 @@ class Trainer:
         predictions, target_ids = self.model.predict(batch)
 
         # compute loss, backward
-        loss = self.loss_fn(predictions, target_ids)
+        loss = self.loss_fn()(predictions, target_ids)
         loss.backward()
 
         # scaling the gradients down, places a limit on the size of the parameter updates
@@ -220,7 +220,7 @@ class Trainer:
         predictions, target_ids = self.model.predict(batch)
 
         # compute loss
-        loss = self.loss_fn(predictions, target_ids)
+        loss = self.loss_fn()(predictions, target_ids)
         eval_loss += (loss.item() - eval_loss) / (batch_id + 1)
 
         # compute f1
