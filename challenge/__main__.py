@@ -38,14 +38,8 @@ class Main:
         # log model parameter information
         self.log_trainable_parameters()
 
-    #
-    #
-    #  -------- __call__ -----------
-    #
-    def __call__(self):
-
-        self.logger.info("\n[--- TRAINING ---]")
-        _: dict = Trainer(
+        # load trainer
+        self.trainer = Trainer(
             self.model,
             self.train,
             self.eval,
@@ -53,10 +47,19 @@ class Main:
             out_dir=self.config['log_dir'],
             config=self.config['trainer'],
 
-        )()
+        )
+
+    #
+    #
+    #  -------- __call__ -----------
+    #
+    def __call__(self):
+
+        self.logger.info("\n[--- TRAINING ---]")
+        self.trainer()
 
         self.logger.info("\n[--- METRIC ---]")
-        self.show_metric(
+        self.trainer.show_metric(
             self.test,
             {
                 0: 'Neutral',

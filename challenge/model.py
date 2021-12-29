@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 
 from challenge.nn import MLP, GRU
-from challenge.util import Metric, flatten, get_device
+from challenge.util import flatten, get_device
 
 
 class Model(nn.Module):
@@ -18,8 +18,6 @@ class Model(nn.Module):
             config = self._default_config()
 
         self.config = config
-
-        self.metric = Metric()
         self.embedding = embedding
 
         self.emb_dropout = nn.Dropout(p=self.embedding.dropout, inplace=False)
@@ -105,55 +103,6 @@ class Model(nn.Module):
 
         return self.forward(word_batch), torch.LongTensor(flatten(label_batch)).to(get_device())
 
-    #
-    #
-    #  -------- loss -----------
-    #
-    def loss(
-            self,
-            batch: list,
-    ) -> nn.CrossEntropyLoss:
-        return nn.CrossEntropyLoss()(*self.predict(batch))
-
-    #
-    #
-    #  -------- evaluate -----------
-    #
-    @torch.no_grad()
-    def evaluate(
-            self,
-            batch: list,
-            reset: bool = True,
-            category: str = None,
-    ) -> float:
-        self.eval()
-
-        if reset:
-            self.metric.reset()
-
-        predictions, target_ids = self.predict(batch)
-
-        # Process the predictions and compare with the gold labels
-        for pred, gold in zip(torch.argmax(predictions, dim=1), target_ids):
-
-            pred = pred.item()
-            gold = gold.item()
-
-            if pred == gold:
-                self.metric.add_tp(pred)
-
-                for c in self.metric.get_classes():
-                    if c != pred:
-                        self.metric.add_tn(pred)
-
-            if pred != gold:
-                self.metric.add_fp(pred)
-                self.metric.add_fn(gold)
-
-        self.metric.show()
-        exit()
-        return self.metric.f_score(class_name=category)
-
     #  -------- save -----------
     #
     def save(self, path: str) -> None:
@@ -161,8 +110,7 @@ class Model(nn.Module):
         torch.save(
             {
                 "config": self.config,
-                "state_dict": self.state_dict(),
-                "metric": self.metric,
+                "state_dict": self.state_dict()
             },
             path + ".pickle",
         )

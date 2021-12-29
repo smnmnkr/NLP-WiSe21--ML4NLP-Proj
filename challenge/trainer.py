@@ -7,7 +7,7 @@ from torch import optim
 from tqdm import tqdm
 
 from challenge.data import batch_loader
-from challenge.util import EarlyStopping
+from challenge.util import EarlyStopping, Metric
 
 
 class Trainer:
@@ -39,15 +39,17 @@ class Trainer:
             "eval": eval_set,
         }
         self.logger = logger
+        self.metric = Metric(self.logger)
         self.out_dir = out_dir
 
+        # load config file else use default
         if config is None:
             config = self._default_config()
 
         self.config = config
 
-        # choose Adam for optimization
-        # https://pytorch.org/docs/stable/generated/torch.optim.AdamW.html
+        # setup loss_fn, optimizer, scheduler and early stopping
+        self.loss_fn = torch.nn.CrossEntropyLoss()
         self.optimizer = optim.AdamW(self.model.parameters(), **self.config["optimizer"])
         self.scheduler = torch.optim.lr_scheduler.LambdaLR(
             self.optimizer,
@@ -85,7 +87,7 @@ class Trainer:
 
     #
     #
-    #  -------- __call__ -----------
+    #  -------- __call__ (train) -----------
     #
     def __call__(self) -> dict:
         saved_model_epoch: int = 0
@@ -102,17 +104,15 @@ class Trainer:
                 # --- begin train
                 train_loss: float = 0.0
                 train_f1: float = 0.0
-                for idx, batch in self.load_iterator(self.data["train"], epoch=epoch, desc="Train"):
-                    train_f1, train_loss = self.train(batch, idx, train_f1, train_loss)
+                for idx, batch in self._load_iterator(self.data["train"], epoch=epoch, desc="Train"):
+                    train_f1, train_loss = self._train(batch, idx, train_f1, train_loss)
 
                 # --- ---------------------------------
                 # --- begin evaluate
                 eval_loss: float = 0.0
                 eval_f1: float = 0.0
-                for idx, batch in self.load_iterator(self.data["eval"], epoch=epoch, desc="Eval"):
-                    self.model.eval()
-                    eval_loss += (self.model.loss(batch).item() - eval_loss) / (idx + 1)
-                    eval_f1 += (self.model.evaluate(batch) - eval_f1) / (idx + 1)
+                for idx, batch in self._load_iterator(self.data["eval"], epoch=epoch, desc="Eval"):
+                    eval_f1, eval_loss = self._train(batch, idx, eval_f1, eval_loss)
 
                 # --- ---------------------------------
                 # --- update state
@@ -139,7 +139,7 @@ class Trainer:
                 # --- ---------------------------------
                 # --- log to user
                 if epoch % self.config["report_rate"] == 0:
-                    self.log(epoch)
+                    self._log(epoch)
 
         except KeyboardInterrupt:
             self.logger.warning("Warning: Training interrupted by User!")
@@ -147,24 +147,47 @@ class Trainer:
         # load last save model
         self.logger.info("Load best model based on evaluation loss.")
         self.model = self.model.load(self.out_dir + "model", self.model.embedding)
-        self.log(saved_model_epoch)
+        self._log(saved_model_epoch)
 
         # return and write train state to main
-        self.write_state()
+        self._write_state()
         return self.state
 
     #
     #
-    #  -------- train -----------
+    #  -------- show_metric -----------
     #
-    def train(self, batch: dict, batch_id: int, train_f1: float, train_loss: float) -> Tuple[float, float]:
+    def show_metric(self, data_set, encoding: dict) -> None:
+        try:
+            self.model.eval()
+            self.model.metric.reset()
+
+            for batch in batch_loader(
+                    data_set,
+                    batch_size=self.config["batch_size"],
+                    shuffle=self.config["shuffle"]):
+                _ = self.model.evaluate(batch, reset=False)
+
+            self.model.metric.show(encoding, self.logger)
+
+        except KeyboardInterrupt:
+            self.logger.warning("Warning: Evaluation interrupted by User!")
+
+    #
+    #
+    #  -------- _train -----------
+    #
+    def _train(self, batch: dict, batch_id: int, train_f1: float, train_loss: float) -> Tuple[float, float]:
         self.model.train()
 
         # zero the parameter gradients
         self.optimizer.zero_grad()
 
+        # predict batch
+        predictions, target_ids = self.model.predict(batch)
+
         # compute loss, backward
-        loss = self.model.loss(batch)
+        loss = self.loss_fn(predictions, target_ids)
         loss.backward()
 
         # scaling the gradients down, places a limit on the size of the parameter updates
@@ -176,7 +199,7 @@ class Trainer:
 
         # save loss, acc for statistics
         train_loss += (loss.item() - train_loss) / (batch_id + 1)
-        train_f1 += (self.model.evaluate(batch) - train_f1) / (batch_id + 1)
+        train_f1 += (self._evaluate(predictions, target_ids) - train_f1) / (batch_id + 1)
 
         # reduce memory usage by deleting loss after calculation
         # https://discuss.pytorch.org/t/calling-loss-backward-reduce-memory-usage/2735
@@ -186,9 +209,66 @@ class Trainer:
 
     #
     #
+    #  -------- eval -----------
+    #
+    @torch.no_grad()
+    def _eval(self, batch: dict, batch_id: int, eval_f1: float, eval_loss: float):
+        self.model.eval()
+
+        # predict batch
+        predictions, target_ids = self.model.predict(batch)
+
+        # compute loss
+        loss = self.loss_fn(predictions, target_ids)
+        eval_loss += (loss.item() - eval_loss) / (batch_id + 1)
+
+        # compute f1
+        eval_f1 += (self._evaluate(predictions, target_ids) - eval_f1) / (batch_id + 1)
+
+        del loss
+        return eval_loss, eval_f1
+
+    #
+    #
+    #  -------- _evaluate -----------
+    #
+    @torch.no_grad()
+    def _evaluate(
+            self,
+            predictions: torch.Tensor,
+            target_ids: torch.Tensor,
+            reset: bool = True,
+            category: str = None,
+    ) -> float:
+        self.model.eval()
+
+        if reset:
+            self.metric.reset()
+
+        # Process the predictions and compare with the gold labels
+        for pred, gold in zip(torch.argmax(predictions, dim=1), target_ids):
+
+            pred = pred.item()
+            gold = gold.item()
+
+            if pred == gold:
+                self.metric.add_tp(pred)
+
+                for c in self.metric.get_classes():
+                    if c != pred:
+                        self.metric.add_tn(pred)
+
+            if pred != gold:
+                self.metric.add_fp(pred)
+                self.metric.add_fn(gold)
+
+        return self.metric.f_score(class_name=category)
+
+    #
+    #
     #  -------- load_iterator -----------
     #
-    def load_iterator(self, data, epoch: int, desc: str):
+    def _load_iterator(self, data, epoch: int, desc: str):
         return enumerate(tqdm(
             batch_loader(
                 data,
@@ -202,9 +282,9 @@ class Trainer:
 
     #
     #
-    #  -------- log -----------
+    #  -------- _log -----------
     #
-    def log(self, epoch: int):
+    def _log(self, epoch: int):
         self.logger.info((
             f"@{epoch:03}: \t"
             f"loss(train)={self.state['train_loss'][epoch - 1]:2.4f} \t"
@@ -216,9 +296,9 @@ class Trainer:
 
     #
     #
-    #  -------- write_state -----------
+    #  -------- _write_state -----------
     #
-    def write_state(self):
+    def _write_state(self):
         cols: list = list(self.state.keys())
 
         with open(self.out_dir + 'train.csv', 'w') as output_file:
