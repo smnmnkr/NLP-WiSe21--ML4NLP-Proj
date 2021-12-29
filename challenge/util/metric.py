@@ -147,23 +147,23 @@ class Metric:
 
     #  -------- add_tp -----------
     #
-    def add_tp(self, class_name):
-        self._tps[class_name] += 1
+    def add_tp(self, class_name: int, amount: int = 1):
+        self._tps[class_name] += amount
 
     #  -------- add_tp -----------
     #
-    def add_tn(self, class_name):
-        self._tns[class_name] += 1
+    def add_tn(self, class_name: int, amount: int = 1):
+        self._tns[class_name] += amount
 
     #  -------- add_fp -----------
     #
-    def add_fp(self, class_name):
-        self._fps[class_name] += 1
+    def add_fp(self, class_name: int, amount: int = 1):
+        self._fps[class_name] += amount
 
     #  -------- add_fn -----------
     #
-    def add_fn(self, class_name):
-        self._fns[class_name] += 1
+    def add_fn(self, class_name: int, amount: int = 1):
+        self._fns[class_name] += amount
 
     #  -------- _get -----------
     #
