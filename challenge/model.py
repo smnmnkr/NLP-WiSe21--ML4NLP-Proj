@@ -14,8 +14,11 @@ class Model(nn.Module):
     def __init__(self, config: dict, embedding):
         super().__init__()
 
-        # save config
+        if config is None:
+            config = self._default_config()
+
         self.config = config
+
         self.metric = Metric()
         self.embedding = embedding
 
@@ -37,6 +40,24 @@ class Model(nn.Module):
             out_size=2,
             dropout=self.config["score"]["dropout"],
         )
+
+    #
+    #
+    #  -------- _default_config -----------
+    #
+    @staticmethod
+    def _default_config() -> dict:
+        return {
+            "rnn": {
+                "hid_size": 64,
+                "depth": 2,
+                "dropout": 0.2
+            },
+            "score": {
+                "hid_size": 32,
+                "dropout": 0.2
+            }
+        }
 
     #
     #
