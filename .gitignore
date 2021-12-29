@@ -203,3 +203,6 @@ cython_debug/
 
 # exclude bin files
 *.bin
+
+# exclude tmp experiments result
+_tmp
