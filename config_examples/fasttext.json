@@ -26,13 +26,13 @@
   },
   "model": {
     "rnn": {
-      "hid_size": 64,
-      "depth": 2,
-      "dropout": 0.2
+      "hid_size": 256,
+      "depth": 3,
+      "dropout": 0.5
     },
     "score": {
-      "hid_size": 32,
-      "dropout": 0.2
+      "hid_size": 128,
+      "dropout": 0.5
     }
   },
   "trainer": {
