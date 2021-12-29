@@ -90,7 +90,7 @@ class Main:
             level=logging.INFO if not self.config["debug"] else logging.DEBUG,
             format="%(message)s",
             handlers=[
-                logging.FileHandler(filename),
+                logging.FileHandler(filename, mode="w"),
                 logging.StreamHandler()
             ]
         )
