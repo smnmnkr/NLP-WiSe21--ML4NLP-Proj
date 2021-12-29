@@ -16,7 +16,7 @@
     "punctuation"
   ],
   "model": {
-    "name": "vinai/bertweet-base",
+    "name": "xlnet-base-cased",
     "config": {
     }
   },
