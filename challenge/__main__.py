@@ -94,8 +94,9 @@ class Main:
                 self.tokenizer(row['text'],
                                truncation=True,
                                padding='max_length',
-                               max_length=self.max_length_sent))
+                               max_length=500))
             del row['text']
+
 
     #
     #
