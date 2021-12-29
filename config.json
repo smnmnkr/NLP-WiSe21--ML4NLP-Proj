@@ -16,7 +16,7 @@
     "punctuation"
   ],
   "model": {
-    "name": "xlnet-base-cased",
+    "name": "distilbert-base-cased",
     "config": {
     }
   },
