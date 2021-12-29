@@ -12,12 +12,12 @@
     "repetitions",
     "emojis",
     "smileys",
-    "spaces"
+    "spaces",
+    "punctuation"
   ],
   "model": {
     "name": "vinai/bertweet-base",
     "config": {
-
     }
   },
   "trainer": {
