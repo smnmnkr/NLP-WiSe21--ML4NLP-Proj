@@ -160,7 +160,7 @@ class Trainer:
     def show_metric(self, data_set, encoding: dict) -> None:
         try:
             self.model.eval()
-            self.model.metric.reset()
+            self.metric.reset()
 
             for batch in batch_loader(
                     data_set,
@@ -168,7 +168,7 @@ class Trainer:
                     shuffle=self.config["shuffle"]):
                 _ = self.model.evaluate(batch, reset=False)
 
-            self.model.metric.show(encoding, self.logger)
+            self.metric.show(encoding)
 
         except KeyboardInterrupt:
             self.logger.warning("Warning: Evaluation interrupted by User!")
