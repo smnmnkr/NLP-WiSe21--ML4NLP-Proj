@@ -31,7 +31,7 @@ class Main:
         self.metric = load_metric("f1")
 
         # load preprocessor and data
-        self.preprocessor = Preprocessor()
+        self.preprocessor = Preprocessor(pipeline=self.config['preprocess'])
         self.data = TwitterSentiment(**self.config['data'])
         self.max_length_sent = self.data.max_text_length()
         self.data.apply_to_text(self.preprocessor)
