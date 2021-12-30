@@ -123,7 +123,7 @@ class Trainer:
                 # --- ---------------------------------
                 # --- handle scheduler & early stopping
                 self.scheduler.step()
-                self.stopper.step(self.state["eval_loss"][-1])
+                self.stopper.step(self.state["train_loss"][-1])
 
                 if self.stopper.should_save:
                     saved_model_epoch = self.state["epoch"][-1]
