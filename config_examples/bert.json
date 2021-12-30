@@ -36,7 +36,7 @@
   "trainer": {
     "epoch_num": 5,
     "shuffle": true,
-    "batch_size": 128,
+    "batch_size": 32,
     "report_rate": 1,
     "max_grad_norm": 1.0,
     "scheduler_decay": 0.2,
