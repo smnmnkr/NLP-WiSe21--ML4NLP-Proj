@@ -227,7 +227,7 @@ class Trainer:
         # https://discuss.pytorch.org/t/calling-loss-backward-reduce-memory-usage/2735
         del loss
 
-        return eval_loss, eval_f1
+        return eval_f1, eval_loss
 
     #
     #
