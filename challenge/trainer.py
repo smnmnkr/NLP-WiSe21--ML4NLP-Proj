@@ -209,7 +209,7 @@ class Trainer:
     #
     #  -------- eval -----------
     #
-    @torch.no_grad()
+    @torch.inference_mode()
     def _eval(self, batch: dict, batch_id: int, eval_f1: float, eval_loss: float):
         self.model.eval()
 
@@ -233,7 +233,7 @@ class Trainer:
     #
     #  -------- _evaluate -----------
     #
-    @torch.no_grad()
+    @torch.inference_mode()
     def _evaluate(
             self,
             predictions: torch.Tensor,
