@@ -210,7 +210,7 @@ class Trainer:
     #  -------- eval -----------
     #
     @torch.inference_mode()
-    def _eval(self, batch: dict, batch_id: int, eval_f1: float, eval_loss: float):
+    def _eval(self, batch: dict, batch_id: int, eval_f1: float, eval_loss: float) -> Tuple[float, float]:
         self.model.eval()
 
         # predict batch
@@ -285,7 +285,7 @@ class Trainer:
     #
     #  -------- _log -----------
     #
-    def _log(self, epoch: int):
+    def _log(self, epoch: int) -> None:
         self.logger.info((
             f"@{epoch:03}: \t"
             f"loss(train)={self.state['train_loss'][epoch - 1]:2.4f} \t"
@@ -299,7 +299,7 @@ class Trainer:
     #
     #  -------- _write_state -----------
     #
-    def _write_state(self):
+    def _write_state(self) -> None:
         cols: list = list(self.state.keys())
 
         with open(self.out_dir + 'train.csv', 'w') as output_file:
