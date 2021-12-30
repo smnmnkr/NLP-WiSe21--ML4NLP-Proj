@@ -36,7 +36,7 @@
     }
   },
   "trainer": {
-    "epoch_num": 20,
+    "epoch_num": 1,
     "shuffle": true,
     "batch_size": 128,
     "report_rate": 1,
@@ -53,7 +53,7 @@
     },
     "stopper": {
       "delta": 1e-3,
-      "patience": 5
+      "patience": 20
     }
   },
   "seed": 13,
