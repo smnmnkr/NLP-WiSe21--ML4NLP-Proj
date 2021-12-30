@@ -36,7 +36,7 @@ class Trainer:
         self.model = model
         self.data = {
             "train": train_set,
-            "eval": eval_set,
+            "eval": train_set,
         }
         self.logger = logger
         self.metric = Metric(self.logger)
@@ -49,7 +49,7 @@ class Trainer:
         self.config = config
 
         # setup loss_fn, optimizer, scheduler and early stopping
-        self.loss_fn = torch.nn.CrossEntropyLoss
+        self.loss_fn = torch.nn.CrossEntropyLoss()
         self.optimizer = optim.AdamW(self.model.parameters(), **self.config["optimizer"])
         self.scheduler = torch.optim.lr_scheduler.LambdaLR(
             self.optimizer,
@@ -64,7 +64,7 @@ class Trainer:
     @staticmethod
     def _default_config() -> dict:
         return {
-            "epoch_num": 100,
+            "epoch_num": 25,
             "shuffle": True,
             "batch_size": 256,
             "report_rate": 1,
@@ -91,9 +91,6 @@ class Trainer:
     #
     def __call__(self) -> dict:
         saved_model_epoch: int = 0
-
-        # enable gradients
-        torch.set_grad_enabled(True)
 
         # --- epoch loop
         try:
@@ -142,7 +139,7 @@ class Trainer:
                     self._log(epoch)
 
         except KeyboardInterrupt:
-            self.logger.warning("Warning: Training interrupted by User!")
+            self.logger.warning("Warning: Training interrupted by user!")
 
         # load last save model
         self.logger.info("Load best model based on evaluation loss.")
@@ -172,7 +169,7 @@ class Trainer:
             self.metric.show(encoding)
 
         except KeyboardInterrupt:
-            self.logger.warning("Warning: Evaluation interrupted by User!")
+            self.logger.warning("Warning: Evaluation interrupted by user!")
 
     #
     #
@@ -188,7 +185,7 @@ class Trainer:
         predictions, target_ids = self.model.predict(batch)
 
         # compute loss, backward
-        loss = self.loss_fn()(predictions, target_ids)
+        loss = self.loss_fn(predictions, target_ids)
         loss.backward()
 
         # scaling the gradients down, places a limit on the size of the parameter updates
@@ -204,8 +201,8 @@ class Trainer:
 
         # reduce memory usage by deleting loss after calculation
         # https://discuss.pytorch.org/t/calling-loss-backward-reduce-memory-usage/2735
-
         del loss
+
         return train_f1, train_loss
 
     #
@@ -220,13 +217,16 @@ class Trainer:
         predictions, target_ids = self.model.predict(batch)
 
         # compute loss
-        loss = self.loss_fn()(predictions, target_ids)
+        loss = self.loss_fn(predictions, target_ids)
         eval_loss += (loss.item() - eval_loss) / (batch_id + 1)
 
         # compute f1
         eval_f1 += (self._evaluate(predictions, target_ids) - eval_f1) / (batch_id + 1)
 
+        # reduce memory usage by deleting loss after calculation
+        # https://discuss.pytorch.org/t/calling-loss-backward-reduce-memory-usage/2735
         del loss
+
         return eval_loss, eval_f1
 
     #
