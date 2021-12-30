@@ -22,7 +22,7 @@ class Trainer:
             train_set,
             eval_set,
             logger,
-            out_dir: str = "/",
+            out_dir: str,
             config: dict = None):
         self.state: dict = {
             'epoch': [],
@@ -109,17 +109,7 @@ class Trainer:
                 eval_loss: float = 0.0
                 eval_f1: float = 0.0
                 for idx, batch in self._load_iterator(self.data["eval"], epoch=epoch, desc="Eval"):
-                    self.model.eval()
-
-                    # predict batch
-                    predictions, target_ids = self.model.predict(batch)
-
-                    # compute loss
-                    loss = self.loss_fn(predictions, target_ids)
-                    eval_loss += (loss.item() - eval_loss) / (idx + 1)
-
-                    # compute f1
-                    eval_f1 += (self._evaluate(predictions, target_ids) - eval_f1) / (idx + 1)
+                    eval_f1, eval_loss = self._eval(batch, idx, eval_f1, eval_loss)
 
                 # --- ---------------------------------
                 # --- update state
