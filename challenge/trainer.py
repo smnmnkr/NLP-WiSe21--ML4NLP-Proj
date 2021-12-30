@@ -36,7 +36,7 @@ class Trainer:
         self.model = model
         self.data = {
             "train": train_set,
-            "eval": train_set,
+            "eval": eval_set,
         }
         self.logger = logger
         self.metric = Metric(self.logger)
