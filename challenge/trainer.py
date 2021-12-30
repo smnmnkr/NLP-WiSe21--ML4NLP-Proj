@@ -7,7 +7,7 @@ from torch import optim
 from tqdm import tqdm
 
 from challenge.data import batch_loader
-from challenge.util import EarlyStopping, Metric
+from challenge.util import EarlyStopping, Metric, get_device, tensor_match_idx
 
 
 class Trainer:
@@ -123,7 +123,7 @@ class Trainer:
                 # --- ---------------------------------
                 # --- handle scheduler & early stopping
                 self.scheduler.step()
-                self.stopper.step(self.state["train_loss"][-1])
+                self.stopper.step(self.state["eval_loss"][-1])
 
                 if self.stopper.should_save:
                     saved_model_epoch = self.state["epoch"][-1]
@@ -246,22 +246,27 @@ class Trainer:
         if reset:
             self.metric.reset()
 
-        # Process the predictions and compare with the gold labels
-        for pred, gold in zip(torch.argmax(predictions, dim=1), target_ids):
+        # get classes ids and prediction ids
+        classes_ids = torch.tensor([0, 1]).to(get_device())
+        pred_ids = torch.argmax(predictions, dim=1)
 
-            pred = pred.item()
-            gold = gold.item()
+        # get (mis)-match indices
+        match_indices = tensor_match_idx(pred_ids, target_ids).squeeze()
+        mismatch_indices = torch.nonzero(torch.ne(pred_ids, target_ids)).squeeze()
 
-            if pred == gold:
-                self.metric.add_tp(pred)
+        # iterate over each label class
+        for c in classes_ids:
+            # get true positives save to metric
+            tps = len(tensor_match_idx(c, pred_ids[match_indices]))
+            self.metric.add_tp(c.item(), amount=tps)
 
-                for c in self.metric.get_classes():
-                    if c != pred:
-                        self.metric.add_tn(pred)
+            # add true negative to each class non equal to current class
+            for co in classes_ids[classes_ids != c]:
+                self.metric.add_tn(co.item(), amount=tps)
 
-            if pred != gold:
-                self.metric.add_fp(pred)
-                self.metric.add_fn(gold)
+            # get mismatches for each class in predictions and targets
+            self.metric.add_fp(c.item(), len(tensor_match_idx(c, pred_ids[mismatch_indices])))
+            self.metric.add_fn(c.item(), len(tensor_match_idx(c, target_ids[mismatch_indices])))
 
         return self.metric.f_score(class_name=category)
 

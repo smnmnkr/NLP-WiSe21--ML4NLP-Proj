@@ -1,11 +1,9 @@
-from typing import List
-
+import functools
 import json
 import operator
-import functools
-from functools import wraps
-
 from datetime import datetime
+from functools import wraps
+from typing import List
 
 import numpy as np
 import torch
@@ -130,3 +128,11 @@ def smooth_gradient(tensor: torch.Tensor, clip: float = 60.0):
     torch.clamp(tensor, min=-clip, max=clip)
 
     return tensor
+
+
+#
+#
+#  -------- tensor_match_idx -----------
+#
+def tensor_match_idx(t1: torch.Tensor, t2: torch.Tensor) -> torch.Tensor:
+    return torch.nonzero(torch.eq(t1, t2))

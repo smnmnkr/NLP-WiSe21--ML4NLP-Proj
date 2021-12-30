@@ -1,4 +1,6 @@
 # __init__.py
+from .earlystopping import EarlyStopping
+from .encoding import Encoding
 from .functional import (
     time_track,
     get_device,
@@ -10,9 +12,7 @@ from .functional import (
     inverse_logistic,
     dict_max,
     dict_min,
-    smooth_gradient
+    smooth_gradient,
+    tensor_match_idx
 )
-
 from .metric import Metric
-from .encoding import Encoding
-from .earlystopping import EarlyStopping
