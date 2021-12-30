@@ -36,7 +36,7 @@ class Trainer:
         self.model = model
         self.data = {
             "train": train_set,
-            "eval": eval_set,
+            "eval": train_set,
         }
         self.logger = logger
         self.metric = Metric(self.logger)
@@ -109,7 +109,7 @@ class Trainer:
                 eval_loss: float = 0.0
                 eval_f1: float = 0.0
                 for idx, batch in self._load_iterator(self.data["eval"], epoch=epoch, desc="Eval"):
-                    eval_f1, eval_loss = self._train(batch, idx, eval_f1, eval_loss)
+                    eval_f1, eval_loss = self._eval(batch, idx, eval_f1, eval_loss)
 
                 # --- ---------------------------------
                 # --- update state
