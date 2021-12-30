@@ -54,7 +54,7 @@
       "patience": 2
     }
   },
-  "seed": 42,
+  "seed": 13,
   "debug": false,
   "log_dir": "experiments/_tmp/"
 }
