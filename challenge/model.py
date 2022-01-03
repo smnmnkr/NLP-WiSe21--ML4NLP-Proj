@@ -69,7 +69,7 @@ class Model(nn.Module):
         pad_context, mask, hidden = self.context(embed_batch)
 
         # Calculate the score using the sum of all context prediction:
-        return torch.stack([torch.sum(pred, dim=0) for pred in unpad(self.score(pad_context), mask)])
+        return torch.stack([torch.mean(pred, dim=0) for pred in unpad(self.score(pad_context), mask)])
 
         # Calculate the score using last hidden context state:
         # return self.score(torch.cat((hidden[-2, :, :], hidden[-1, :, :]), dim=1))
