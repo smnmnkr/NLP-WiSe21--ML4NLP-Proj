@@ -1,5 +1,6 @@
 import csv
 from datetime import datetime
+from math import cos
 from typing import Tuple
 
 import torch
@@ -48,12 +49,17 @@ class Trainer:
 
         self.config = config
 
+        self.scheduler_functions: dict = {
+            'constant': lambda _: 1,
+            'linear': lambda e: max(0.0, float(self.config["epochs"] - e) / float(self.config["epochs"])),
+            'cyclic': lambda e: abs(cos(e / (self.config["epochs"] * 0.1))),
+        }
+
         # setup loss_fn, optimizer, scheduler and early stopping
         self.loss_fn = torch.nn.CrossEntropyLoss()
         self.optimizer = optim.AdamW(self.model.parameters(), **self.config["optimizer"])
         self.scheduler = torch.optim.lr_scheduler.LambdaLR(
-            self.optimizer,
-            lr_lambda=lambda e: 1 - self.config["scheduler_decay"] ** e
+            self.optimizer, lr_lambda=self.scheduler_functions[self.config["scheduler"]]
         )
         self.stopper = EarlyStopping(**self.config["stopper"])
 
@@ -64,12 +70,11 @@ class Trainer:
     @staticmethod
     def _default_config() -> dict:
         return {
-            "epoch_num": 25,
+            "epochs": 25,
             "shuffle": True,
             "batch_size": 256,
             "report_rate": 1,
             "max_grad_norm": 1.0,
-            "scheduler_decay": 0.05,
             "optimizer": {
                 "lr": 1e-4,
                 "weight_decay": 1e-5,
@@ -79,6 +84,7 @@ class Trainer:
                 ],
                 "eps": 1e-9
             },
+            "scheduler": "linear",
             "stopper": {
                 "delta": 1e-3,
                 "patience": 10
@@ -94,7 +100,7 @@ class Trainer:
 
         # --- epoch loop
         try:
-            for epoch in range(1, self.config["epoch_num"] + 1):
+            for epoch in range(1, self.config["epochs"] + 1):
                 time_begin: datetime = datetime.now()
 
                 # --- ---------------------------------
