@@ -2,8 +2,11 @@ from helper_functions import get_device
 from data_preparation import get_dataloaders
 from datasets import load_metric
 import torch
+from model_preparation import set_seed
 
-def evaluate_on_test_data(model, TEST_DATA_PATH, MODEL_NAME, BATCH_SIZE):
+def evaluate_on_test_data(model, TEST_DATA_PATH, MODEL_NAME, BATCH_SIZE, SEED=42):
+
+    set_seed(SEED)
 
     test_dataloader = get_dataloaders(TEST_DATA_PATH, 
                                             MODEL_NAME, 

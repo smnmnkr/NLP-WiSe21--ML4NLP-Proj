@@ -1,7 +1,28 @@
+import torch
+import random
+import logging
+import numpy as np
+import os
+
 from transformers import    AutoModelForSequenceClassification,\
                             AdamW,\
                             get_scheduler
 
+def set_seed(seed):
+    """ Set all seeds to make results reproducible (deterministic mode).
+        When seed is a false-y value or not supplied, disables deterministic mode. """
+
+    if seed:
+        logging.info(f"Running in deterministic mode with seed {seed}")
+        torch.manual_seed(seed)
+        torch.cuda.manual_seed_all(seed)
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
+        np.random.seed(seed)
+        random.seed(seed)
+        os.environ['PYTHONHASHSEED'] = str(seed)
+    else:
+        logging.info(f"Running in non-deterministic mode")
 
 class Model():
     def __init__(self, model_name, num_epochs, length_dataloader):

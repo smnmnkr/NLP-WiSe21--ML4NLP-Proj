@@ -1,12 +1,13 @@
 # from tqdm.auto import tqdm
-from model_preparation import Model
+from model_preparation import Model, set_seed
 from helper_functions import get_device
 from data_preparation import get_dataloaders
 from datasets import load_metric
 import torch
 
+def train_model_on_train_data(TRAIN_DATA_PATH, MODEL_NAME, BATCH_SIZE, NUM_EPOCHS, SEED=42):
 
-def train_model_on_train_data(TRAIN_DATA_PATH, MODEL_NAME, BATCH_SIZE, NUM_EPOCHS):
+    set_seed(SEED)
 
     train_dataloader, validation_dataloader = get_dataloaders(TRAIN_DATA_PATH, 
                                                                 MODEL_NAME, 

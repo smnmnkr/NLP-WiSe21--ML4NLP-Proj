@@ -12,7 +12,7 @@ from torch.utils.data import DataLoader, SequentialSampler
 def _load_dataset(data_path):
     return pd.read_csv(data_path, sep=',')
 
-def _prepare_data(raw: pd.DataFrame) -> List[Dict]:
+def _prepare_data(raw: pd.DataFrame, custom_clean_text=None) -> List[Dict]:
     def _clean_text(row: pd.DataFrame) -> pd.DataFrame:
         # remove hyperlinks
         # src: https://stackoverflow.com/questions/11331982/how-to-remove-any-url-within-a-string-in-python/11332580
@@ -23,6 +23,16 @@ def _prepare_data(raw: pd.DataFrame) -> List[Dict]:
 
         # remove hashtags
         row['text'] = re.sub(r'#\w*', "", row['text'])
+
+        # remove emojis
+        pattern = re.compile("["
+                             u"\U0001F600-\U0001F64F"  # emoticons
+                             u"\U0001F300-\U0001F5FF"  # symbols & pictographs
+                             u"\U0001F680-\U0001F6FF"  # transport & map symbols
+                             u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
+                             "]+", flags=re.UNICODE)
+
+        row['text'] = pattern.sub(r' ', row['text'])
 
         return row
 
@@ -35,7 +45,11 @@ def _prepare_data(raw: pd.DataFrame) -> List[Dict]:
     prepared.drop(['id', 'time', 'lang', 'smth'], axis=1, inplace=True)
     prepared.rename(columns={'tweet': 'text', 'sent': 'label'}, inplace=True)
 
-    prepared.apply(_clean_text, axis=1)
+    if custom_clean_text:
+        prepared.apply(custom_clean_text, axis=1)
+    else:
+        prepared.apply(_clean_text, axis=1)
+    
     prepared.apply(_convert_sentiment, axis=1)
 
     return prepared
@@ -91,7 +105,7 @@ def _create_dataloaders(input_ids, attention_masks, labels, batch_size, create_v
 
     dataloader = DataLoader(
                 dataset,  # The training samples.
-                shuffle = True,
+                shuffle = False,
                 batch_size = batch_size # Trains with this batch size.
             )
 
