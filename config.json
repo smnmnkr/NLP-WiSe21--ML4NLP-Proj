@@ -16,7 +16,7 @@
     "punctuation"
   ],
   "model": {
-    "name": "distilbert-base-cased",
+    "name": "bert-base-cased",
     "config": {
     }
   },
