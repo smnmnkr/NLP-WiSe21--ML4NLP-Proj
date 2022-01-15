@@ -38,9 +38,11 @@ class Main:
 
         self.train = self.data.to_dict('train')
         self.eval = self.data.to_dict('eval')
+        self.test = self.data.to_dict('test')
 
         self.tokenize(self.train)
         self.tokenize(self.eval)
+        self.tokenize(self.test)
 
         # load and config trainer
         self.trainer = Trainer(
@@ -64,8 +66,11 @@ class Main:
             self.trainer.train()
             self.trainer.evaluate()
 
-            outputs = self.trainer.predict(self.eval)
-            print(outputs.metrics)
+            outputs_eval = self.trainer.predict(self.eval)
+            print(outputs_eval.metrics)
+
+            outputs_test = self.trainer.predict(self.test)
+            print(outputs_test.metrics)
 
     #
     #
