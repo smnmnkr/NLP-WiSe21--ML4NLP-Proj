@@ -3,7 +3,7 @@ from evaluate import evaluate_on_test_data
 
 
 # Parameters
-TRAIN_DATA_PATH = "data/train.csv"
+TRAIN_DATA_PATH = "data/train_aug.csv"
 TEST_DATA_PATH = "data/eval.csv"
 MODEL_NAME = "microsoft/deberta-base"
 BATCH_SIZE = 16

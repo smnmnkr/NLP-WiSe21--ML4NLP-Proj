@@ -55,7 +55,10 @@ if alpha_sr == alpha_ri == alpha_rs == alpha_rd == 0:
 def gen_eda(train_orig, output_file, alpha_sr, alpha_ri, alpha_rs, alpha_rd, num_aug=9):
 
     writer = open(output_file, 'w')
-    lines = open("eda_nlp-master/data/"+train_orig, 'r').readlines()
+    try:
+        lines = open("eda_nlp-master/data/"+train_orig, 'r').readlines()
+    except:
+        lines = open("BERT_in_Pytorch/eda_nlp-master/data/"+train_orig, 'r').readlines()
 
     for i, line in enumerate(lines):
         parts = line[:-1].split('\t')

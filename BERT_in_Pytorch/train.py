@@ -9,10 +9,17 @@ def train_model_on_train_data(TRAIN_DATA_PATH, MODEL_NAME, BATCH_SIZE, NUM_EPOCH
 
     set_seed(SEED)
 
+    augmented = False
+    if TRAIN_DATA_PATH != "data/train_aug.csv":
+        print("\n\n################\n\nUSING STANDARD TRAINING SET\n\n################\n\n")
+        augmented = True
+
     train_dataloader, validation_dataloader = get_dataloaders(TRAIN_DATA_PATH, 
                                                                 MODEL_NAME, 
-                                                                BATCH_SIZE, 
-                                                                create_validation_set = True)
+                                                                BATCH_SIZE,
+                                                                augmented,
+                                                                create_validation_set = True,
+                                                                )
 
     model_class = Model(MODEL_NAME, NUM_EPOCHS, len(train_dataloader))
     model, optimizer, lr_scheduler = model_class.get_model_optimizer_scheduler()

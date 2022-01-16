@@ -23,10 +23,12 @@ def _prepare_data(raw: pd.DataFrame, pipeline=None) -> List[Dict]:
         return row
 
     prepared = raw.copy()
+
     try:
         prepared.drop(['id', 'time', 'lang', 'smth'], axis=1, inplace=True)
     except:
         pass
+
     prepared.rename(columns={'tweet': 'text', 'sent': 'label'}, inplace=True)
 
     prepared["text"] = prepared["text"].apply(preprocessor)
@@ -95,9 +97,10 @@ def _create_dataloaders(input_ids, attention_masks, labels, batch_size, create_v
     else:
         return dataloader
 
-def get_dataloaders(data_path,  model_name = "bert-base-cased", batch_size = 16, create_validation_set = True):
+def get_dataloaders(data_path,  model_name = "bert-base-cased", batch_size = 16, augmented = False, create_validation_set = True):
     df = _load_dataset(data_path)
-    df = _prepare_data(df)
+    if not augmented:
+        df = _prepare_data(df)
     input_ids, attention_masks, labels = _create_tensors(df, model_name)
     dataloaders = _create_dataloaders(input_ids, attention_masks, labels, batch_size, create_validation_set)
 
