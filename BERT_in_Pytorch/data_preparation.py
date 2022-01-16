@@ -1,40 +1,22 @@
 import pandas as pd
 from typing import List, Dict
-import re
-
 from transformers import AutoTokenizer
-from preprocessor import Preprocessor
-
 import torch
 from torch.utils.data import TensorDataset, random_split
 from torch.utils.data import DataLoader, SequentialSampler
+
+from preprocessor import Preprocessor
 
 
 def _load_dataset(data_path):
     return pd.read_csv(data_path, sep=',')
 
-def _prepare_data(raw: pd.DataFrame, custom_clean_text=None) -> List[Dict]:
-    def _clean_text(text: str) -> str:
-        pipeline = [
-            # 'lowercase',
-            'hyperlinks',
-            # 'remove_hyperlinks',
-            'mentions',
-            # 'remove_mentions',
-            'hashtags',
-            # 'remove_hashtags',
-            'retweet',
-            'repetitions',
-            'emojis',
-            'smileys',
-            'punctuation',
-            'spaces',
-            # 'tokenize'
-        ]
+def _prepare_data(raw: pd.DataFrame, pipeline=None) -> List[Dict]:
 
-        preprocessor = Preprocessor(pipeline)
+    if not pipeline:
+        pipeline = ['hyperlinks', 'mentions', 'hashtags', 'retweet', 'repetitions', 'emojis', 'smileys', 'spaces']
 
-        return preprocessor(text)
+    preprocessor = Preprocessor(pipeline)
 
     def _convert_sentiment(row: pd.DataFrame) -> pd.DataFrame:
         row['label'] = 0 if row['label'] == 'Neutral' else 1
@@ -47,10 +29,7 @@ def _prepare_data(raw: pd.DataFrame, custom_clean_text=None) -> List[Dict]:
         pass
     prepared.rename(columns={'tweet': 'text', 'sent': 'label'}, inplace=True)
 
-    if custom_clean_text:
-        prepared["text"] = prepared["text"].apply(custom_clean_text)
-    else:
-        prepared["text"] = prepared["text"].apply(_clean_text)
+    prepared["text"] = prepared["text"].apply(preprocessor)
     
     prepared.apply(_convert_sentiment, axis=1)
 

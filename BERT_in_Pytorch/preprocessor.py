@@ -36,6 +36,8 @@ class Preprocessor:
             pipeline = [*self.mapping]
 
         self.pipeline = pipeline
+        if "correct_spell" in self.pipeline:
+            self.sym_spell = self.create_spell_checker()
 
     #
     #
@@ -75,10 +77,12 @@ class Preprocessor:
             'retweet': self.retweet,
             'emojis': self.emojis,
             'smileys': self.smileys,
+            'substitute_smileys': self.substitute_smileys,
             'repetitions': self.repetitions,
             'spaces': self.spaces,
             'punctuation': self.punctuation,
-            'tokenize': self.tokenize
+            'tokenize': self.tokenize,
+            'correct_spell': self.correct_spell,
         }
 
     #  -------- lowercase -----------
@@ -237,6 +241,34 @@ class Preprocessor:
         text = re.sub(r'(:,\(|:\'\(|:"\()', ' smiley ', text)
 
         return text
+    
+    @staticmethod
+    def substitute_smileys(text: str) -> str:
+        """
+        Removes smileys, replace with token smiley
+        src: https://github.com/abdulfatir/twitter-sentiment-analysis/blob/master/code/preprocess.py
+        :rtype: object
+        """
+
+        # Smile -- :), : ), :-), (:, ( :, (-:, :')
+        text = re.sub(r'(:\s?\)|:-\)|\(\s?:|\(-:|:\'\))', ' smiley ', text)
+
+        # Laugh -- :D, : D, :-D, xD, x-D, XD, X-D
+        text = re.sub(r'(:\s?D|:-D|x-?D|X-?D)', ' smiley ', text)
+
+        # Love -- <3, :*
+        text = re.sub(r'(<3|:\*)', ' smiley ', text)
+
+        # Wink -- ;-), ;), ;-D, ;D, (;,  (-;
+        text = re.sub(r'(;-?\)|;-?D|\(-?;)', ' smiley ', text)
+
+        # Sad -- :-(, : (, :(, ):, )-:
+        text = re.sub(r'(:\s?\(|:-\(|\)\s?:|\)-:)', ' smiley ', text)
+
+        # Cry -- :,(, :'(, :"(
+        text = re.sub(r'(:,\(|:\'\(|:"\()', ' smiley ', text)
+
+        return text
 
     #  -------- punctuation -----------
     #
@@ -259,3 +291,36 @@ class Preprocessor:
         :return: text: str
         """
         return text.split()
+
+    #  -------- correct spell -----------
+    #
+    def create_spell_checker(self):
+        import pkg_resources
+        from symspellpy import SymSpell
+        
+        sym_spell = SymSpell(max_dictionary_edit_distance=2, prefix_length=7)
+        dictionary_path = pkg_resources.resource_filename(
+            "symspellpy", "frequency_dictionary_en_82_765.txt")
+        bigram_path = pkg_resources.resource_filename(
+            "symspellpy", "frequency_bigramdictionary_en_243_342.txt")
+        # term_index is the column of the term and count_index is the
+        # column of the term frequency
+        sym_spell.load_dictionary(dictionary_path, term_index=0, count_index=1)
+        sym_spell.load_bigram_dictionary(bigram_path, term_index=0, count_index=2)
+
+        return sym_spell
+
+
+    def correct_spell(self, text: str) -> str:
+        """
+        Corrects spell (it's a bit aggresive, do not use as it is)
+        :param text: str
+        :return: text: str
+        """
+
+        # lookup suggestions for multi-word input strings (supports compound
+        # splitting & merging)
+        # max edit distance per lookup (per single word, not per whole input string)
+        suggestions = self.sym_spell.lookup_compound(text, max_edit_distance=2)
+
+        return suggestions[0]._term
