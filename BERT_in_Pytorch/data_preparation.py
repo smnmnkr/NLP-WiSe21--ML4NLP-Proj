@@ -3,6 +3,7 @@ from typing import List, Dict
 import re
 
 from transformers import AutoTokenizer
+from preprocessor import Preprocessor
 
 import torch
 from torch.utils.data import TensorDataset, random_split
@@ -13,42 +14,43 @@ def _load_dataset(data_path):
     return pd.read_csv(data_path, sep=',')
 
 def _prepare_data(raw: pd.DataFrame, custom_clean_text=None) -> List[Dict]:
-    def _clean_text(row: pd.DataFrame) -> pd.DataFrame:
-        # remove hyperlinks
-        # src: https://stackoverflow.com/questions/11331982/how-to-remove-any-url-within-a-string-in-python/11332580
-        row['text'] = re.sub(r'\S*https?:\S*', "", row['text'])
+    def _clean_text(text: str) -> str:
+        pipeline = [
+            # 'lowercase',
+            'hyperlinks',
+            # 'remove_hyperlinks',
+            'mentions',
+            # 'remove_mentions',
+            'hashtags',
+            # 'remove_hashtags',
+            'retweet',
+            'repetitions',
+            'emojis',
+            'smileys',
+            'punctuation',
+            'spaces',
+            # 'tokenize'
+        ]
 
-        # remove mentions
-        row['text'] = re.sub(r'@\w*', "", row['text'])
+        preprocessor = Preprocessor(pipeline)
 
-        # remove hashtags
-        row['text'] = re.sub(r'#\w*', "", row['text'])
-
-        # remove emojis
-        pattern = re.compile("["
-                             u"\U0001F600-\U0001F64F"  # emoticons
-                             u"\U0001F300-\U0001F5FF"  # symbols & pictographs
-                             u"\U0001F680-\U0001F6FF"  # transport & map symbols
-                             u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
-                             "]+", flags=re.UNICODE)
-
-        row['text'] = pattern.sub(r' ', row['text'])
-
-        return row
+        return preprocessor(text)
 
     def _convert_sentiment(row: pd.DataFrame) -> pd.DataFrame:
         row['label'] = 0 if row['label'] == 'Neutral' else 1
         return row
 
     prepared = raw.copy()
-
-    prepared.drop(['id', 'time', 'lang', 'smth'], axis=1, inplace=True)
+    try:
+        prepared.drop(['id', 'time', 'lang', 'smth'], axis=1, inplace=True)
+    except:
+        pass
     prepared.rename(columns={'tweet': 'text', 'sent': 'label'}, inplace=True)
 
     if custom_clean_text:
-        prepared.apply(custom_clean_text, axis=1)
+        prepared["text"] = prepared["text"].apply(custom_clean_text)
     else:
-        prepared.apply(_clean_text, axis=1)
+        prepared["text"] = prepared["text"].apply(_clean_text)
     
     prepared.apply(_convert_sentiment, axis=1)
 
