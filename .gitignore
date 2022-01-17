@@ -16,6 +16,10 @@
 # User-specific stuff
 .idea
 corpora/
+data/train_aug.csv
+pretrained_model/with_augmented_data
+pretrained_model/entire_model.pt
+pretrained_model/model_state_dict.pt
 
 # Gradle and Maven with auto-import
 # When using Gradle or Maven with auto-import, you should exclude module files,

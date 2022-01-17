@@ -1,112 +1,46 @@
-import argparse
-
-import numpy as np
-
-from datasets import load_metric
-
-from transformers import AutoTokenizer
+import torch
 from transformers import AutoModelForSequenceClassification
-from transformers import TrainingArguments, Trainer
-from transformers import DataCollatorWithPadding
-from transformers import logging
+import warnings
+warnings.filterwarnings("ignore")
 
-from lib.data import Data
-from lib.preprocessor import Preprocessor
-from lib.utils import load_json
-
-logging.set_verbosity_info()
+from train import train_model_on_train_data, train_model_on_full_train_data
+from evaluate import evaluate_on_test_data
 
 
-class Main:
-    #
-    #
-    #  -------- __init__ -----------
-    #
-    def __init__(self):
-        self.description: str = "Twitter Sentiment Analysis"
-        self.config: dict = self.load_config()
+# Parameters
+TRAIN_DATA_PATH = "data/train.csv"
+TEST_DATA_PATH = "data/eval.csv"
+MODEL_NAME = "microsoft/deberta-base"
+BATCH_SIZE = 16
+NUM_EPOCHS = 1
+SEED = 42
+TRAIN_MODEL_ON_FULL_TRAINING_DATA = True
+SAVE_NEW_MODEL = True
+USE_PRETRAINED_MODEL = True
 
-        # load main hugging face components
-        self.tokenizer = AutoTokenizer.from_pretrained(self.config['model']['name'])
-        self.model = AutoModelForSequenceClassification.from_pretrained(self.config['model']['name'], num_labels=2)
-        self.data_collator = DataCollatorWithPadding(tokenizer=self.tokenizer)
-        self.metric = load_metric("f1")
 
-        # load preprocessor and data
-        self.preprocessor = Preprocessor()
-        self.data = Data(**self.config['data'])
-        self.data.apply_preprocessor(self.preprocessor)
-
-        self.train = self.data.to_dict('train')
-        self.eval = self.data.to_dict('eval')
-
-        self.tokenize(self.train)
-        self.tokenize(self.eval)
-
-        # load and config trainer
-        self.trainer = Trainer(
-            model=self.model,
-            args=TrainingArguments(**self.config['trainer']),
-            train_dataset=self.train,
-            eval_dataset=self.eval,
-            tokenizer=self.tokenizer,
-            data_collator=self.data_collator,
-            compute_metrics=self.compute_metrics,
+if USE_PRETRAINED_MODEL:
+    model = AutoModelForSequenceClassification.from_pretrained(
+            MODEL_NAME,
+            num_labels = 2,
+            output_attentions = False,
+            output_hidden_states = False,
         )
+    model.load_state_dict(torch.load("pretrained_model/model_state_dict.pt"))
 
-    #
-    #
-    #  -------- __call__ -----------
-    #
-    def __call__(self):
-        self.trainer.train()
-        self.trainer.evaluate()
+else:
+    if TRAIN_MODEL_ON_FULL_TRAINING_DATA:
+        model, training_stats = train_model_on_full_train_data(TRAIN_DATA_PATH, MODEL_NAME, BATCH_SIZE, NUM_EPOCHS, SEED)
+    else:
+        model, training_stats = train_model_on_train_data(TRAIN_DATA_PATH, MODEL_NAME, BATCH_SIZE, NUM_EPOCHS, SEED)
+    print("\nTraining results: ", training_stats)
 
-        outputs = self.trainer.predict(self.eval)
-        print(outputs.metrics)
-
-    #
-    #
-    #  -------- load_config -----------
-    #
-    def load_config(self) -> dict:
-        # get console arguments, config file
-        parser = argparse.ArgumentParser(description=self.description)
-        parser.add_argument(
-            "-C",
-            dest="config",
-            required=True,
-            help="config.json file",
-            metavar="FILE",
-        )
-        args = parser.parse_args()
-        return load_json(args.config)
-
-    #
-    #
-    #  -------- tokenize -----------
-    #
-    def tokenize(self, data: list):
-        for row in data:
-            row.update(self.tokenizer(row['text'], truncation=True, padding='max_length', max_length=500))
-            del row['text']
-
-    #
-    #
-    #  -------- compute_metrics -----------
-    #
-    def compute_metrics(self, eval_pred):
-        predictions, labels = eval_pred
-        predictions = np.argmax(predictions, axis=1)
-
-        return self.metric.compute(predictions=predictions, references=labels)
+    if SAVE_NEW_MODEL:
+        torch.save(model.state_dict(), "pretrained_model/model_state_dict.pt")
+        torch.save(model, "pretrained_model/entire_model.pt")
 
 
-#
-#
-#  -------- __main__ -----------
-#
-if __name__ == "__main__":
-    Main()()
 
+testing_stats = evaluate_on_test_data(model, TEST_DATA_PATH, MODEL_NAME, BATCH_SIZE, SEED)
+print("\nTesting results: ", testing_stats)
 

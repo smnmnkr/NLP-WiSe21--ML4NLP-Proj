@@ -1,0 +1,6 @@
+model_name,pipeline,training_loss,validation_loss,validation_f1,test_loss,test_f1,augmented
+microsoft/deberta-base,"['hyperlinks', 'mentions', 'hashtags', 'retweet', 'repetitions', 'emojis', 'smileys', 'spaces']",0.5397793708366895,0.4982197283893018,{'f1': 0.7855407047387605},0.5104690918491946,{'f1': 0.7723367697594502},no
+microsoft/deberta-base,"['lowercase', 'hyperlinks', 'mentions', 'hashtags', 'retweet', 'repetitions', 'emojis', 'smileys', 'spaces']",0.5602754071964541,0.5075152339162053,{'f1': 0.7865235539654144},0.5191091382217528,{'f1': 0.7712455516014236},no
+microsoft/deberta-base,"['hyperlinks', 'mentions', 'hashtags', 'repetitions', 'emojis', 'smileys', 'spaces']",0.5443648510622634,0.5017521217062667,{'f1': 0.7833935018050541},0.5123112777041064,{'f1': 0.7747542384955122},no
+microsoft/deberta-base,"['hyperlinks', 'mentions', 'hashtags', 'retweet', 'emojis', 'smileys', 'spaces']",0.5550197400645802,0.5188179815943177,{'f1': 0.7694189602446483},0.5044407154800314,{'f1': 0.777521613832853},no
+microsoft/deberta-base,"['hyperlinks', 'mentions', 'hashtags', 'retweet', 'repetitions', 'emojis', 'smileys', 'spaces']",None,None,{'f1': None},0.8805124887237044,{'f1': 0.7505435570372517},yes
